@@ -242,3 +242,33 @@ O primeiro pacote do ping às vezes se perde, enquanto o Windows descobre o ende
 | `ping 192.168.56.10` | falha | falha | falha |
 
 Na primeira rodada o ping para a `lb` falhou com *Destination Host Unreachable* porque a `lb` ainda não tinha o IP `.10`. Não era defeito destas VMs. Agora a `lb` tem o IP, e o ping a partir de cada VM deve ser repetido (**pendente**).
+
+## Parte 4 — Particularidades da lb
+
+A `lb` seguiu o mesmo roteiro da Parte 3 (netplan com `dhcp4: false` na `enp0s8`, `99-disable-network-config.cfg`, `chmod 600`, `netplan apply`), com o IP `192.168.56.10/24` e o backup do arquivo original em `/root/50-cloud-init.yaml.bak`. Antes do ajuste, a `enp0s8` tinha pegado `192.168.56.105` do DHCP. O que foi diferente:
+
+### Chave SSH de laboratório
+
+Para configurar a `lb` pelo SSH, e não só pelo console, foi autorizada uma chave pública dedicada ao laboratório (comentário `claude-lab`) em `~/.ssh/authorized_keys` do `sdadmin`, digitada uma vez no console já logado. Com ela o login a partir do Windows funciona sem senha, e só dá acesso ao usuário `sdadmin`.
+
+### sudo sem senha (só laboratório)
+
+```bash
+echo 'sdadmin ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/90-lab
+```
+
+Cria um arquivo em `/etc/sudoers.d/` que libera o `sudo` sem senha para o `sdadmin`. Foi necessário porque o netplan exige `sudo` e as senhas são digitadas só por quem é dono delas, nunca por quem executa os comandos remotamente. Este comando é o único que pediu a senha, uma vez, digitada no console da VM. Num laboratório isolado é aceitável; em produção, não.
+
+Os dois acessos (a chave e o `90-lab`) devem ser removidos no fim do trabalho, ver [vms.md](vms.md#acesso-de-laboratório).
+
+### Testes a partir da lb
+
+```bash
+ping -c 3 192.168.56.11   # repetir para .12 e .13
+nc -zv 192.168.56.11 22   # porta 22 aberta?
+```
+
+- `ping -c 3`: três pacotes ICMP, testa a rede host-only até o destino.
+- `nc -zv <ip> 22` (ou equivalente): tenta abrir a conexão TCP na porta 22 sem enviar dados, e mostra se o SSH está de pé.
+
+Resultado: ping e porta 22 responderam nas três VMs. Depois de reiniciar a `lb`, o `ip -br a` continuou mostrando `192.168.56.10/24`.
