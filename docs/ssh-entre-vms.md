@@ -1,6 +1,6 @@
 # SSH com chaves entre as VMs (etapa 3)
 
-> **Em andamento.** O par de chaves da `lb` foi gerado; a cópia da chave pública para as outras VMs e os testes ainda não foram concluídos. As seções marcadas como **pendente** serão preenchidas quando o resultado chegar.
+> **Concluída e testada** em 23/10/2026: da `lb` o SSH entra sem senha na `app-a`, `app-b` e `db`. Fica pendente apenas o sentido inverso (nós para a `lb`, ou entre os nós), se o grupo quiser.
 
 ## Objetivo
 
@@ -25,7 +25,7 @@ ssh-keygen -t ed25519 -N '' -C sdadmin@lb -f ~/.ssh/id_ed25519
 
 **Conferir:** `ls -l ~/.ssh/id_ed25519*` mostra os dois arquivos, e a privada deve ter permissão `-rw-------`.
 
-### 2. Copiar a chave pública para cada VM (pendente)
+### 2. Copiar a chave pública para cada VM (feito)
 
 ```bash
 ssh-copy-id sdadmin@192.168.56.11
@@ -35,7 +35,7 @@ ssh-copy-id sdadmin@192.168.56.13
 
 `ssh-copy-id` conecta com a senha uma única vez e acrescenta a chave pública ao `~/.ssh/authorized_keys` do destino, criando a pasta e ajustando as permissões que o SSH exige (ele ignora a chave se a pasta estiver aberta para outros). Na primeira conexão com cada VM, o SSH pergunta se confia na impressão digital do servidor: responder `yes` grava a VM no `known_hosts`. A senha de cada VM é digitada por quem é dono dela.
 
-### 3. Testar sem senha (pendente)
+### 3. Testar sem senha (feito)
 
 ```bash
 for h in 11 12 13; do ssh -o BatchMode=yes sdadmin@192.168.56.$h hostname; done
@@ -47,10 +47,20 @@ for h in 11 12 13; do ssh -o BatchMode=yes sdadmin@192.168.56.$h hostname; done
 
 | Destino | Esperado | Obtido |
 | --- | --- | --- |
-| `sdadmin@192.168.56.11` | `app-a`, sem senha | **pendente** |
-| `sdadmin@192.168.56.12` | `app-b`, sem senha | **pendente** |
-| `sdadmin@192.168.56.13` | `db`, sem senha | **pendente** |
+| `sdadmin@192.168.56.11` | `app-a`, sem senha | `app-a`, sem senha |
+| `sdadmin@192.168.56.12` | `app-b`, sem senha | `app-b`, sem senha |
+| `sdadmin@192.168.56.13` | `db`, sem senha | `db`, sem senha |
+
+O teste usou `-o BatchMode=yes`, que falha em vez de pedir senha, então o resultado prova que a chave foi aceita. **Pendente**, se o grupo quiser: o sentido inverso (nós para a `lb`) e o SSH entre os nós.
+
+## Erros comuns
+
+| Mensagem | Causa | O que fazer |
+| --- | --- | --- |
+| `Permission denied (publickey,password)` | A chave pública não chegou ao destino. | Repetir o `ssh-copy-id` para aquela VM. |
+| `Host key verification failed` | O IP já esteve associado a outra máquina e o `known_hosts` guarda a impressão digital antiga. | `ssh-keygen -R <ip>` remove a linha antiga. |
+| `Connection timed out` | Problema de rede, não de chave. | Conferir o IP e a porta 22. |
 
 ## Relação com o acesso do Windows
 
-O login do Windows para as três VMs de aplicação e banco por chave já foi testado (ver [testes-iniciais.md](testes-iniciais.md)). Esta etapa acrescenta o caminho da `lb` para elas.
+O login do Windows para as três VMs de aplicação e banco por chave também foi testado (ver [testes-iniciais.md](testes-iniciais.md)). Esta etapa acrescenta o caminho da `lb` para elas.

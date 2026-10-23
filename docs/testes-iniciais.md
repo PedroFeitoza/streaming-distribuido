@@ -8,7 +8,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 
 | VM | Rede (IP fixo, NAT, rota) | Do Windows (ping e porta 22) | Entre as VMs | SSH por chave |
 | --- | --- | --- | --- | --- |
-| lb (.10) | ok | ok (ping e SSH) | ok: alcança .11, .12 e .13 (ping e porta 22); o sentido inverso é **pendente** | ok (Windows) |
+| lb (.10) | ok | ok (ping e SSH) | ok: alcança .11, .12 e .13 (ping e porta 22); o sentido inverso é **pendente** | ok (Windows); chave da lb para as 3 VMs ok |
 | app-a (.11) | ok | ok | ok (app-b e db) | ok |
 | app-b (.12) | ok | ok | ok (app-a e db) | ok |
 | db (.13) | ok | ok | ok (app-a e app-b) | ok |
@@ -33,6 +33,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou** na primeira rodada (*Destination Host Unreachable*, a `lb` ainda sem IP); **repetir** agora que ela tem IP |
 | Ping cruzado | `ping` para `.12` e `.13` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.11 hostname` (Windows) | `app-a`, sem pedir senha | `app-a`, sem senha |
+| SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.11 hostname` (lb) | `app-a`, sem senha | `app-a`, sem senha |
 | IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.11/24` | **pendente** |
 
 ## app-b (192.168.56.12)
@@ -48,6 +49,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou** na primeira rodada (*Destination Host Unreachable*, a `lb` ainda sem IP); **repetir** agora que ela tem IP |
 | Ping cruzado | `ping` para `.11` e `.13` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.12 hostname` (Windows) | `app-b`, sem pedir senha | `app-b`, sem senha |
+| SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.12 hostname` (lb) | `app-b`, sem senha | `app-b`, sem senha |
 | IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.12/24` | **pendente** |
 
 ## db (192.168.56.13)
@@ -63,6 +65,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou** na primeira rodada (*Destination Host Unreachable*, a `lb` ainda sem IP); **repetir** agora que ela tem IP |
 | Ping cruzado | `ping` para `.11` e `.12` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.13 hostname` (Windows) | `db`, sem pedir senha | `db`, sem senha |
+| SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.13 hostname` (lb) | `db`, sem senha | `db`, sem senha (ver [ssh-entre-vms.md](ssh-entre-vms.md)) |
 | IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.13/24` | **pendente** |
 | Tamanho de `/` | `df -h /` (VM) | cerca de 15 GB | 9,75 GB, porque o LVM ficou marcado (ver [Falhas](#falhas-e-causas)) |
 
@@ -126,7 +129,7 @@ Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorize
 - [ ] Ping de app-a, app-b e db para a `lb`.
 - [ ] Reiniciar app-a, app-b e db e conferir que o IP fixo continua (`ip -br a`); a `lb` já foi testada.
 - [ ] `app-b`: reconferir os IPs da `enp0s8` e a rota padrão única (`ip -br a`, `ip route`).
-- [ ] SSH por chave da `lb` para app-a, app-b e db (ver [ssh-entre-vms.md](ssh-entre-vms.md)).
+- [ ] SSH por chave no sentido inverso (nós para a `lb`) e entre os nós, se o grupo quiser.
 - [ ] Colega entrar na VPN e pingar/acessar uma VM.
 - [ ] Decidir sobre a expansão do LVM da db.
 - [ ] Remover o acesso de laboratório da `lb`.
