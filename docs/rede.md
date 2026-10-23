@@ -114,9 +114,9 @@ Para conferir que a configuração é permanente, reiniciar a VM (`sudo reboot`)
 | `ping ubuntu.com` | 3/3 | 2/2 | 3/3 |
 | Ping do Windows | ok | ok | 3/3, porta 22 aberta |
 | `ssh` do Windows | — | — | **pendente** (confirmar login) |
-| `ping 192.168.56.10` (lb) | **pendente** (repetir agora que a `lb` tem IP) | **pendente** | **pendente** |
+| `ping 192.168.56.10` (lb) | a confirmar | a confirmar | a confirmar |
 
-Na primeira rodada de testes o ping para a `lb` falhou com *Destination Host Unreachable*, porque ela ainda não tinha o IP `.10`: a VM perguntou na rede (ARP) quem era o `.10` e ninguém respondeu. Depois que a `lb` recebeu o IP fixo, ela alcançou as três VMs (ver abaixo). O ping no sentido contrário, de cada VM para a `lb`, ainda deve ser repetido (**pendente**).
+A `lb` alcança as três VMs (ver abaixo). O ping no sentido contrário, de cada VM para a `lb`, está **a confirmar**. Os resultados completos de todos os testes estão em [testes-iniciais.md](testes-iniciais.md); aqui ficam os da configuração de rede.
 
 ### Resultados da `lb`
 

@@ -239,9 +239,9 @@ O primeiro pacote do ping às vezes se perde, enquanto o Windows descobre o ende
 | Rota padrão | via `enp0s3` | via `enp0s3` | via `enp0s3` |
 | `ping ubuntu.com` | 3/3 | 2/2 | 3/3 |
 | Ping do Windows | ok | ok | 3/3, porta 22 aberta |
-| `ping 192.168.56.10` | falha | falha | falha |
+| `ping 192.168.56.10` (lb) | a confirmar | a confirmar | a confirmar |
 
-Na primeira rodada o ping para a `lb` falhou com *Destination Host Unreachable* porque a `lb` ainda não tinha o IP `.10`. Não era defeito destas VMs. Agora a `lb` tem o IP, e o ping a partir de cada VM deve ser repetido (**pendente**).
+O ping destas VMs para a `lb` ainda está **a confirmar**. Os resultados completos dos testes estão em [testes-iniciais.md](testes-iniciais.md).
 
 ## Parte 4 — Particularidades da lb
 
