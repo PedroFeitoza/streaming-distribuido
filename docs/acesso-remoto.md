@@ -1,11 +1,11 @@
 # Acesso remoto do grupo às VMs
 
-As quatro VMs rodam no VirtualBox do PC do Pedro, na rede host-only `192.168.56.0/24`. Essa rede só existe dentro desse PC. Este documento mostra como os colegas do grupo acessam as VMs pela internet sem expor nada publicamente.
+As quatro VMs rodam no VirtualBox de um único computador (o anfitrião), na rede host-only `192.168.56.0/24`. Essa rede só existe dentro desse PC. Este documento mostra como os colegas do grupo acessam as VMs pela internet sem expor nada publicamente.
 
 ## Visão geral
 
 ```
- Colega (casa)                     PC do Pedro                        VMs (host-only)
+ Colega (casa)                     computador anfitrião                        VMs (host-only)
 ┌─────────────┐   VPN Tailscale   ┌──────────────────────┐   ┌──────────────────────────┐
 │ ssh maria@  │ ════════════════► │ Tailscale            │──►│ lb     192.168.56.10     │
 │ 192.168.56.x│   (100.x.x.x)     │ subnet router da rota│   │ app-a  192.168.56.11     │
@@ -15,13 +15,13 @@ As quatro VMs rodam no VirtualBox do PC do Pedro, na rede host-only `192.168.56.
 ```
 
 - **Tailscale** cria uma rede privada (VPN) entre os computadores do grupo. Cada um recebe um IP `100.x.x.x`.
-- O PC do Pedro **anuncia a rota** `192.168.56.0/24` (atua como *subnet router*): o que um colega mandar para `192.168.56.11` atravessa a VPN até o PC do Pedro, que repassa para a VM.
+- O computador anfitrião **anuncia a rota** `192.168.56.0/24` (atua como *subnet router*): o que um colega mandar para `192.168.56.11` atravessa a VPN até o computador anfitrião, que repassa para a VM.
 - Cada colega tem **o próprio usuário Linux** em cada VM e entra **só com a própria chave SSH**. Ninguém compartilha senha, e dá para saber quem fez o quê.
 - Para trabalhar junto: **VS Code Remote-SSH** (cada um edita pelo seu VS Code) e **tmux** (um terminal compartilhado).
 
-> Requisitos: o PC do Pedro ligado com as VMs rodando, e as VMs com o IP fixo do netplan (ver README).
+> Requisitos: o computador anfitrião ligado com as VMs rodando, e as VMs com o IP fixo do netplan (ver README).
 
-## Etapa 1 — Tailscale no PC do Pedro
+## Etapa 1 — Tailscale no computador anfitrião
 
 No PowerShell como administrador:
 
@@ -39,7 +39,7 @@ tailscale set --advertise-routes=192.168.56.0/24
 
 No painel <https://login.tailscale.com/admin/machines>:
 
-1. No PC do Pedro, menu `...` → **Edit route settings** → marque `192.168.56.0/24`. Sem essa aprovação a rota anunciada não é usada.
+1. No computador anfitrião, menu `...` → **Edit route settings** → marque `192.168.56.0/24`. Sem essa aprovação a rota anunciada não é usada.
 2. No mesmo menu, **Disable key expiry**, para o PC não sair da VPN quando a chave do dispositivo expirar.
 
 **Teste:**
@@ -51,7 +51,7 @@ tailscale debug prefs   # AdvertiseRoutes deve conter 192.168.56.0/24
 
 ## Etapa 2 — Colegas entram na VPN
 
-1. Pedro convida cada colega em **Users → Invite users** no painel. Compartilhar só a máquina (*Share*) não basta: máquinas compartilhadas não levam as rotas de sub-rede.
+1. O administrador do Tailscale convida cada colega em **Users → Invite users** no painel. Compartilhar só a máquina (*Share*) não basta: máquinas compartilhadas não levam as rotas de sub-rede.
 2. Cada colega instala o Tailscale (<https://tailscale.com/download>) e entra pelo convite.
    - Windows e macOS aceitam as rotas por padrão.
    - Linux: `sudo tailscale up --accept-routes`
@@ -59,11 +59,11 @@ tailscale debug prefs   # AdvertiseRoutes deve conter 192.168.56.0/24
 **Teste (no computador do colega):**
 
 ```bash
-tailscale status          # deve listar o PC do Pedro
+tailscale status          # deve listar o computador anfitrião
 ping 192.168.56.10
 ```
 
-> Se o colega também tiver VirtualBox com host-only em `192.168.56.0/24`, a rede local dele tem prioridade e o ping vai para a máquina dele. Nesse caso, ele desativa o adaptador host-only local enquanto acessa as VMs do Pedro.
+> Se o colega também tiver VirtualBox com host-only em `192.168.56.0/24`, a rede local dele tem prioridade e o ping vai para a máquina dele. Nesse caso, ele desativa o adaptador host-only local enquanto acessa as VMs do grupo.
 
 ## Etapa 3 — Chave SSH de cada colega
 
@@ -76,9 +76,9 @@ ssh-keygen -t ed25519 -C "maria-streaming"
 Isso cria dois arquivos em `~/.ssh/`:
 
 - `id_ed25519` — chave **privada**. Nunca sai do computador do colega.
-- `id_ed25519.pub` — chave **pública**. É esta que o colega manda para o Pedro.
+- `id_ed25519.pub` — chave **pública**. É esta que o colega manda para o administrador.
 
-A chave pública não é segredo, mas também não precisa ir para o repositório: o Pedro recebe o `.pub` por mensagem.
+A chave pública não é segredo, mas também não precisa ir para o repositório: o administrador recebe o `.pub` por mensagem.
 
 ## Etapa 4 — Criar o usuário do colega em cada VM
 
@@ -86,7 +86,7 @@ O script [`scripts/criar-usuario.sh`](../scripts/criar-usuario.sh) cria o usuár
 
 Dê `--sudo` só a quem vai administrar a VM (instalar pacotes, mexer no Nginx, no systemd, no PostgreSQL).
 
-Do PC do Pedro, com a chave `maria.pub` na pasta atual, para as quatro VMs:
+No computador anfitrião, com a chave `maria.pub` na pasta atual, para as quatro VMs:
 
 ```bash
 for ip in 10 11 12 13; do
@@ -208,12 +208,12 @@ E, no painel do Tailscale, remova o usuário em **Users**.
 
 | Sintoma | Causa provável | O que verificar |
 | --- | --- | --- |
-| `ping 192.168.56.10` falha no colega, mas `tailscale ping <pc-do-pedro>` funciona | Rota não aprovada ou não aceita | Painel → *Edit route settings*; no Linux, `--accept-routes` |
-| Nada responde, nem `tailscale ping` | PC do Pedro desligado ou fora da VPN | `tailscale status` no PC do Pedro |
+| `ping 192.168.56.10` falha no colega, mas `tailscale ping <nome-do-anfitriao>` funciona | Rota não aprovada ou não aceita | Painel → *Edit route settings*; no Linux, `--accept-routes` |
+| Nada responde, nem `tailscale ping` | computador anfitrião desligado ou fora da VPN | `tailscale status` no computador anfitrião |
 | Ping funciona, SSH dá `Connection refused` | `sshd` parado na VM | `sudo systemctl status ssh` na VM |
 | `Permission denied (publickey)` | Chave errada ou permissões de `~/.ssh` | `ssh -v` no colega; na VM, `ls -la ~maria/.ssh` (700 na pasta, 600 no arquivo) |
-| SSH funciona do PC do Pedro mas não pela VPN | Subnet router no Windows com problema | Alternativa: instalar o Tailscale na VM `lb` e anunciar a rota a partir dela (`sudo tailscale up --advertise-routes=192.168.56.0/24`) |
+| SSH funciona do computador anfitrião mas não pela VPN | Repasse de rede do anfitrião com problema | Alternativa: instalar o Tailscale na VM `lb` e anunciar a rota a partir dela (`sudo tailscale up --advertise-routes=192.168.56.0/24`) |
 
 ## O que nunca vai para o repositório
 
-Chaves privadas, senhas, auth keys do Tailscale e e-mails dos integrantes. Chaves públicas também ficam fora: o Pedro as recebe por mensagem e instala direto nas VMs.
+Chaves privadas, senhas, auth keys do Tailscale e e-mails dos integrantes. Chaves públicas também ficam fora: o administrador as recebe por mensagem e instala direto nas VMs.
