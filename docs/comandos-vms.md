@@ -1,6 +1,6 @@
 # Comandos usados nas VMs app-a, app-b e db
 
-Passo a passo dos comandos executados para criar e configurar as VMs `app-a`, `app-b` e `db`, com o que cada um faz e por que foi usado. O contexto e as decisões estão em [vms.md](vms.md) e [rede.md](rede.md). A `lb` ainda está **pendente** e será documentada quando terminar.
+Passo a passo dos comandos executados para criar e configurar as VMs `app-a`, `app-b` e `db` (a `lb` seguiu o mesmo roteiro, com 1 GB de RAM, 1 CPU e IP `192.168.56.10`; o netplan dela está em [`infra/netplan/lb.yaml`](../infra/netplan/lb.yaml)), com o que cada um faz e por que foi usado. O contexto e as decisões estão em [vms.md](vms.md) e [rede.md](rede.md).
 
 > **Sobre a exatidão:** os valores (nomes, memória, CPUs, tamanhos, caminhos, IPs) e os comandos do console são os usados. Os parâmetros do controlador de disco (`storagectl` e `storageattach`), como o nome `SATA` e as portas, não ficaram registrados; aparecem aqui na forma padrão, que dá o mesmo resultado.
 
@@ -241,4 +241,4 @@ O primeiro pacote do ping às vezes se perde, enquanto o Windows descobre o ende
 | Ping do Windows | ok | ok | 3/3, porta 22 aberta |
 | `ping 192.168.56.10` | falha | falha | falha |
 
-O ping para a `lb` falha com *Destination Host Unreachable* porque a `lb` ainda não tem o IP `.10` (**pendente**). Não é defeito destas VMs.
+Na primeira rodada o ping para a `lb` falhou com *Destination Host Unreachable* porque a `lb` ainda não tinha o IP `.10`. Não era defeito destas VMs. Agora a `lb` tem o IP, e o ping a partir de cada VM deve ser repetido (**pendente**).

@@ -8,7 +8,7 @@ Registro de como as quatro VMs do projeto foram criadas e instaladas. A configur
 
 | VM | Nome / hostname | Papel | IP host-only | RAM | CPUs | Disco | Situação |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| VM 1 | `lb` | Balanceador Nginx | 192.168.56.10 | 1 GB | 1 | 10 GB | Instalação do Ubuntu em andamento; IP **pendente** |
+| VM 1 | `lb` | Balanceador Nginx | 192.168.56.10 | 1 GB | 1 | 10 GB | Instalada, IP fixo aplicado e testado; Nginx **pendente** |
 | VM 2 | `app-a` | Nó A da aplicação | 192.168.56.11 | 2 GB | 2 | 10 GB | Instalada, IP fixo aplicado e testado |
 | VM 3 | `app-b` | Nó B da aplicação | 192.168.56.12 | 2 GB | 2 | 10 GB | Instalada, IP fixo aplicado e testado |
 | VM 4 | `db` | Banco PostgreSQL | 192.168.56.13 | 2 GB | 2 | 15 GB | Instalada, IP fixo aplicado e testado |
@@ -102,7 +102,7 @@ ping -c 3 ubuntu.com
 
 | VM | hostname | NAT / internet |
 | --- | --- | --- |
-| lb | **pendente** (instalação em andamento) | **pendente** |
+| lb | `lb` | ok (0% de perda) |
 | app-a | `app-a` (após correção, ver abaixo) | ok |
 | app-b | `app-b` | ok |
 | db | `db` | ok |
@@ -137,6 +137,28 @@ Conferência: `hostnamectl --static` responde `app-a` e o `/etc/hosts` mostra `1
 
 Na `db` o LVM ficou marcado na instalação, e o `/` ficou com 9,75 GB em vez dos 15 GB do disco. Por enquanto foi mantido assim; o espaço restante pode ser liberado depois com `lvextend` e `resize2fs`, quando o banco precisar. **Pendente**, se o grupo decidir expandir.
 
+### Instalação da `lb` interrompida na fase de atualizações
+
+A `lb` tem só 1 GB de RAM, e o instalador ficou muito tempo na fase "Updating system", baixando e aplicando atualizações de segurança. A instalação foi interrompida nessa fase e a VM seguiu para o primeiro boot sem as atualizações. Os avisos `perl: warning: Setting locale failed` que aparecem nessa tela são inofensivos. As atualizações ficaram para depois, com `sudo apt update && sudo apt upgrade` (**pendente**).
+
+### Acesso de laboratório
+
+Para configurar a `lb` à distância foram criados dois acessos que **devem ser removidos no fim do trabalho**:
+
+- Uma chave SSH pública de laboratório (comentário `claude-lab`) em `~sdadmin/.ssh/authorized_keys`.
+- `/etc/sudoers.d/90-lab` com `sdadmin ALL=(ALL) NOPASSWD:ALL`, que libera o `sudo` sem senha. Só é aceitável num laboratório isolado, nunca em produção.
+
+Para remover:
+
+```bash
+sudo rm /etc/sudoers.d/90-lab
+sed -i '/claude-lab/d' ~/.ssh/authorized_keys
+```
+
+### Observação sobre a app-b
+
+A `app-b` apareceu com dois IPs na `enp0s8`, o fixo `192.168.56.12` e o `192.168.56.104` do DHCP. Isso indica que o `.104` pode ter ficado ativo até o DHCP expirar ou até o próximo `netplan apply` ou reinício. Deve ser reconferida com `ip -br a`, e a `enp0s8` deve ter só o `.12` (**pendente**).
+
 ### Configuração pelo console com `keyboardputstring`
 
 Parte da configuração foi feita digitando no console das VMs a partir do host, com `VBoxManage controlvm <vm> keyboardputstring "..."` e conferindo a tela com `VBoxManage controlvm <vm> screenshotpng`. Não precisa de Guest Additions. Observações:
@@ -147,7 +169,10 @@ Parte da configuração foi feita digitando no console das VMs a partir do host,
 
 ## Pendências
 
-- [ ] `lb`: concluir a instalação, fixar `192.168.56.10` e testar.
+- [ ] `lb`: atualizar o sistema (`sudo apt update && sudo apt upgrade`), porque a instalação foi interrompida na fase de atualizações.
+- [ ] `lb`: instalar o Nginx e configurar o upstream para `192.168.56.11:3000` e `192.168.56.12:3000`.
+- [ ] Remover o acesso de laboratório ao fim do trabalho (ver [Acesso de laboratório](#acesso-de-laboratório)).
+- [ ] `app-b`: reconferir os IPs da `enp0s8` (ver [Observação sobre a app-b](#observação-sobre-a-app-b)).
 - [ ] `db`: confirmar o login `ssh sdadmin@192.168.56.13` a partir do Windows (ping e porta 22 já respondem).
-- [ ] Ping de todas as VMs para a `lb` (`ping -c 3 192.168.56.10`), que depende do item acima.
+- [ ] Ping da app-a, app-b e db para a `lb` (`ping -c 3 192.168.56.10`); a `lb` já alcança as três.
 - [ ] `db`: decidir se expande o LVM para os 15 GB.

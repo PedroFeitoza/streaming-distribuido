@@ -18,7 +18,7 @@ Pelo NAT a VM sai para a internet através do host, como atrás de um roteador, 
 | VM | IP `enp0s8` | Situação |
 | --- | --- | --- |
 | Host Windows | 192.168.56.1 | — |
-| lb | 192.168.56.10 | **pendente** |
+| lb | 192.168.56.10 | aplicado e testado |
 | app-a | 192.168.56.11 | aplicado e testado |
 | app-b | 192.168.56.12 | aplicado e testado |
 | db | 192.168.56.13 | aplicado e testado |
@@ -31,7 +31,7 @@ A rede host-only do VirtualBox **tem um servidor DHCP ligado**, distribuindo end
 VBoxManage list dhcpservers   # Enabled: Yes
 ```
 
-Consequência: logo após a instalação, a `enp0s8` já veio com IP do DHCP (`.102` na `app-a`, `.104` na `app-b`, `.103` na `db`), porque o instalador grava `dhcp4: true` nas duas interfaces. Os IPs do projeto (`.10` a `.13`) ficam fora da faixa do DHCP, então não há conflito, mas a `enp0s8` precisa de `dhcp4: false`. Se só fosse acrescentado o IP fixo, a interface ficaria com dois endereços (o do DHCP e o fixo).
+Consequência: logo após a instalação, a `enp0s8` já veio com IP do DHCP (`.102` na `app-a`, `.104` na `app-b`, `.103` na `db`, `.105` na `lb`), porque o instalador grava `dhcp4: true` nas duas interfaces. Os IPs do projeto (`.10` a `.13`) ficam fora da faixa do DHCP, então não há conflito, mas a `enp0s8` precisa de `dhcp4: false`. Se só fosse acrescentado o IP fixo, a interface ficaria com dois endereços (o do DHCP e o fixo).
 
 ## Netplan
 
@@ -60,7 +60,7 @@ network:
 
 YAML usa espaços (nunca Tab) para a indentação, e ela define a hierarquia.
 
-Os arquivos de cada VM ficam em [`infra/netplan/`](../infra/netplan/). Até agora existem os da `app-a`, da `app-b` e da `db`; o da `lb` será acrescentado quando o IP for aplicado (**pendente**). Os comandos usados para gravar e aplicar o arquivo, um a um, estão em [comandos-vms.md](comandos-vms.md#parte-3--configurar-dentro-da-vm).
+Os arquivos de cada VM ficam em [`infra/netplan/`](../infra/netplan/). Existem os das quatro VMs (`lb`, `app-a`, `app-b` e `db`). Os comandos usados para gravar e aplicar o arquivo, um a um, estão em [comandos-vms.md](comandos-vms.md#parte-3--configurar-dentro-da-vm).
 
 ### Aplicar
 
@@ -81,7 +81,7 @@ O cloud-init pode reescrever o `50-cloud-init.yaml` no boot e trazer o `dhcp4: t
 echo 'network: {config: disabled}' | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 ```
 
-Aplicado na `app-a`, na `app-b` e na `db`.
+Aplicado nas quatro VMs. Na `lb` o backup do arquivo original ficou em `/root/50-cloud-init.yaml.bak`.
 
 ## Testes
 
@@ -114,6 +114,18 @@ Para conferir que a configuração é permanente, reiniciar a VM (`sudo reboot`)
 | `ping ubuntu.com` | 3/3 | 2/2 | 3/3 |
 | Ping do Windows | ok | ok | 3/3, porta 22 aberta |
 | `ssh` do Windows | — | — | **pendente** (confirmar login) |
-| `ping 192.168.56.10` (lb) | falha: *Destination Host Unreachable* | falha | falha: *Destination Host Unreachable* |
+| `ping 192.168.56.10` (lb) | **pendente** (repetir agora que a `lb` tem IP) | **pendente** | **pendente** |
 
-O ping para a `lb` falha porque a `lb` ainda não tem o IP `.10`. *Destination Host Unreachable* significa que a VM perguntou na rede (ARP) quem é o `.10` e ninguém respondeu: o problema está na `lb`, não em quem faz o ping. **Pendente** até a `lb` receber o IP fixo.
+Na primeira rodada de testes o ping para a `lb` falhou com *Destination Host Unreachable*, porque ela ainda não tinha o IP `.10`: a VM perguntou na rede (ARP) quem era o `.10` e ninguém respondeu. Depois que a `lb` recebeu o IP fixo, ela alcançou as três VMs (ver abaixo). O ping no sentido contrário, de cada VM para a `lb`, ainda deve ser repetido (**pendente**).
+
+### Resultados da `lb`
+
+| Teste | Resultado |
+| --- | --- |
+| `ip -br a` | `enp0s8` com `192.168.56.10/24` |
+| `ping ubuntu.com` (NAT) | 0% de perda |
+| `ssh sdadmin@192.168.56.10` a partir do Windows | ok |
+| `lb` para `192.168.56.11`, `.12` e `.13`: ping e porta 22 | todos ok |
+| Reinício da `lb` | IP `192.168.56.10` mantido |
+
+A `enp0s8` da `lb` chegou com `192.168.56.105` do DHCP antes do ajuste para `dhcp4: false`.

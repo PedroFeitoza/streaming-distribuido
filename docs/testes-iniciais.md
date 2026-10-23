@@ -2,13 +2,13 @@
 
 Registro dos testes que **foram executados** nas VMs até agora e dos resultados obtidos. O que ainda não foi testado está marcado como **pendente**. A criação das VMs está em [vms.md](vms.md), a rede em [rede.md](rede.md) e os comandos em [comandos-vms.md](comandos-vms.md).
 
-> Situação em 23/10/2026. A `lb` ainda estava na instalação do Ubuntu quando os testes abaixo foram feitos.
+> Situação em 23/10/2026. Os testes das VMs de aplicação e do banco foram feitos antes de a `lb` ter IP; os da `lb` vieram depois e estão na seção própria.
 
 ## Resumo
 
 | VM | Rede (IP fixo, NAT, rota) | Do Windows (ping e porta 22) | Entre as VMs | SSH por chave |
 | --- | --- | --- | --- | --- |
-| lb (.10) | **pendente** (instalação em andamento) | falhou: sem IP | falhou: sem IP | **pendente** |
+| lb (.10) | ok | ok (ping e SSH) | ok: alcança .11, .12 e .13 (ping e porta 22); o sentido inverso é **pendente** | ok (Windows) |
 | app-a (.11) | ok | ok | ok (app-b e db) | ok |
 | app-b (.12) | ok | ok | ok (app-a e db) | ok |
 | db (.13) | ok | ok | ok (app-a e app-b) | ok |
@@ -30,7 +30,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Internet pelo NAT | `ping -c 3 ubuntu.com` (VM) | 3 respostas | 3 de 3 |
 | Ping do Windows | `ping 192.168.56.11` (Windows) | responde | responde |
 | Porta 22 | conexão TCP na porta 22 (Windows) | aberta | aberta |
-| Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou**: *Destination Host Unreachable* |
+| Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou** na primeira rodada (*Destination Host Unreachable*, a `lb` ainda sem IP); **repetir** agora que ela tem IP |
 | Ping cruzado | `ping` para `.12` e `.13` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.11 hostname` (Windows) | `app-a`, sem pedir senha | `app-a`, sem senha |
 | IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.11/24` | **pendente** |
@@ -45,7 +45,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Internet pelo NAT | `ping -c 3 ubuntu.com` (VM) | respostas | 2 de 2 |
 | Ping do Windows | `ping 192.168.56.12` (Windows) | responde | responde (o primeiro pacote se perde, ver [Falhas](#falhas-e-causas)) |
 | Porta 22 | conexão TCP na porta 22 (Windows) | aberta | aberta |
-| Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou**: *Destination Host Unreachable* |
+| Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou** na primeira rodada (*Destination Host Unreachable*, a `lb` ainda sem IP); **repetir** agora que ela tem IP |
 | Ping cruzado | `ping` para `.11` e `.13` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.12 hostname` (Windows) | `app-b`, sem pedir senha | `app-b`, sem senha |
 | IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.12/24` | **pendente** |
@@ -60,7 +60,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Internet pelo NAT | `ping -c 3 ubuntu.com` (VM) | 3 respostas | 3 de 3 |
 | Ping do Windows | `ping 192.168.56.13` (Windows) | responde | 3 de 3 |
 | Porta 22 | conexão TCP na porta 22 (Windows) | aberta | aberta |
-| Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou**: *Destination Host Unreachable* |
+| Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | **falhou** na primeira rodada (*Destination Host Unreachable*, a `lb` ainda sem IP); **repetir** agora que ela tem IP |
 | Ping cruzado | `ping` para `.11` e `.12` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.13 hostname` (Windows) | `db`, sem pedir senha | `db`, sem senha |
 | IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.13/24` | **pendente** |
@@ -71,9 +71,12 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Teste | Comando | Esperado | Obtido |
 | --- | --- | --- | --- |
 | VM criada | `VBoxManage showvminfo lb` (Windows) | 1024 MB, 1 CPU, NAT + host-only, disco e ISO | conforme esperado |
-| Instalação | tela do console | instalador concluído | ainda em "Updating system" |
-| Ping e SSH do Windows | `ping 192.168.56.10` (Windows) | responde | **falhou**: ainda sem IP |
-| IP fixo, hostname, rota, internet | `ip -br a`, `hostname`, `ip route`, `ping ubuntu.com` (VM) | como nas outras VMs | **pendente** |
+| Instalação | tela do console | instalador concluído | interrompido na fase "Updating system" (1 GB de RAM, lenta); atualizações **pendentes** |
+| Interfaces e IPs | `ip -br a` (VM) | `enp0s8` com `192.168.56.10/24` | `192.168.56.10/24` |
+| Internet pelo NAT | `ping ubuntu.com` (VM) | respostas | 0% de perda |
+| Ping e SSH do Windows | `ssh sdadmin@192.168.56.10` (Windows) | abre sessão | ok |
+| lb para as outras VMs | ping e porta 22 para `.11`, `.12`, `.13` (VM) | responde e abre | todos ok |
+| IP após reiniciar | reiniciar e `ip -br a` (VM) | continua `192.168.56.10/24` | mantido |
 
 ## Conferências feitas no host
 
@@ -91,7 +94,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Rota anunciada | `tailscale debug prefs` (Windows) | `192.168.56.0/24` em `AdvertiseRoutes` | anunciada |
 | Rota aprovada e chave sem expiração | painel do Tailscale | rota ativa, expiração desligada | feito |
 | Repasse de pacotes (*Forwarding*) | interface do Tailscale no Windows | habilitado | aparecia **Disabled** |
-| Colega pinga uma VM pela VPN | `ping 192.168.56.10` (colega) | responde | **pendente**: nenhum colega entrou ainda, e a `lb` não tem IP |
+| Colega pinga uma VM pela VPN | `ping 192.168.56.10` (colega) | responde | **pendente**: nenhum colega entrou ainda |
 
 Detalhes e comandos em [acesso-remoto.md](acesso-remoto.md), no PR #2.
 
@@ -99,7 +102,9 @@ Detalhes e comandos em [acesso-remoto.md](acesso-remoto.md), no PR #2.
 
 | O que falhou | Causa | Solução |
 | --- | --- | --- |
-| `ping 192.168.56.10` falha em todas as VMs e no Windows (*Destination Host Unreachable*) | A `lb` ainda estava instalando e não tinha o IP fixo. A mensagem indica que ninguém respondeu ao ARP para o `.10`. | **Pendente**: terminar a instalação da `lb` e fixar o IP; repetir o ping nas outras VMs. |
+| `ping 192.168.56.10` falhou nas VMs e no Windows (*Destination Host Unreachable*) | A `lb` ainda estava instalando e não tinha o IP fixo. A mensagem indica que ninguém respondeu ao ARP para o `.10`. | A `lb` recebeu o IP fixo e passou a responder. **Pendente**: repetir o ping a partir de app-a, app-b e db. |
+| Instalação da `lb` parada em "Updating system" | Só 1 GB de RAM; a fase de atualizações de segurança é lenta. Os avisos `perl: warning: Setting locale failed` são inofensivos. | Instalação interrompida e VM reiniciada; `sudo apt update && sudo apt upgrade` fica **pendente**. |
+| `app-b` com dois IPs na `enp0s8` (`.12` e `.104`) | O `.104` veio do DHCP da host-only e pode ter permanecido ativo. | **Pendente**: reconferir com `ip -br a`; deve restar só o `.12`. |
 | `enp0s8` veio com IP do DHCP (`.102`, `.104`, `.103`) | A rede host-only tem DHCP ativo, e o instalador grava `dhcp4: true` nas duas interfaces. | `dhcp4: false` na `enp0s8` e editar o `50-cloud-init.yaml`, em vez de acrescentar outro arquivo. |
 | `sudo` recusou a senha na app-b (*3 incorrect password attempts*) | Erro de digitação da senha; o comando seguinte, enviado pelo console, caiu no campo de senha e gastou as tentativas. | Rodar `sudo -v` de novo, olhar a tela antes de enviar outro comando e digitar a senha com calma. |
 | `sudo` travado na db | O `sudo` pediu a senha no meio de um comando e ele foi cancelado com Ctrl+C. | `sudo -v` digitado pelo próprio usuário antes de enviar os comandos. |
@@ -111,11 +116,16 @@ Detalhes e comandos em [acesso-remoto.md](acesso-remoto.md), no PR #2.
 | Aviso de mídia (cdrom) no reboot | O Ubuntu pede para remover a ISO. | Inofensivo; Enter. |
 | *Forwarding: Disabled* no Tailscale do Windows | Repasse de pacotes ainda não ligado. | **Pendente**: verificar quando um colega testar; plano B é anunciar a rota a partir da `lb`. |
 
+## Acesso de laboratório (remover no fim)
+
+Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorized_keys` e o arquivo `/etc/sudoers.d/90-lab` com `sudo` sem senha. São aceitáveis só em laboratório isolado e **devem ser removidos no fim do trabalho** (ver [vms.md](vms.md#acesso-de-laboratório)).
+
 ## Pendências
 
-- [ ] `lb`: concluir a instalação, fixar `192.168.56.10` e repetir os testes da tabela.
-- [ ] Ping de app-a, app-b e db para a `lb` e da `lb` para elas.
-- [ ] Reiniciar cada VM e conferir que o IP fixo continua (`ip -br a`).
-- [ ] Rota padrão única na app-b, conferida individualmente com `ip route`.
+- [ ] `lb`: `sudo apt update && sudo apt upgrade`, Nginx e upstream.
+- [ ] Ping de app-a, app-b e db para a `lb`.
+- [ ] Reiniciar app-a, app-b e db e conferir que o IP fixo continua (`ip -br a`); a `lb` já foi testada.
+- [ ] `app-b`: reconferir os IPs da `enp0s8` e a rota padrão única (`ip -br a`, `ip route`).
 - [ ] Colega entrar na VPN e pingar/acessar uma VM.
 - [ ] Decidir sobre a expansão do LVM da db.
+- [ ] Remover o acesso de laboratório da `lb`.
