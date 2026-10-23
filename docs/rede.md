@@ -20,7 +20,7 @@ Pelo NAT a VM sai para a internet através do host, como atrás de um roteador, 
 | Host Windows | 192.168.56.1 | — |
 | lb | 192.168.56.10 | **pendente** |
 | app-a | 192.168.56.11 | aplicado e testado |
-| app-b | 192.168.56.12 | **pendente** |
+| app-b | 192.168.56.12 | aplicado e testado |
 | db | 192.168.56.13 | aplicado e testado |
 
 ## DHCP ativo na rede host-only
@@ -31,7 +31,7 @@ A rede host-only do VirtualBox **tem um servidor DHCP ligado**, distribuindo end
 VBoxManage list dhcpservers   # Enabled: Yes
 ```
 
-Consequência: logo após a instalação, a `enp0s8` já veio com IP do DHCP (`.102` na `app-a`, `.103` na `db`), porque o instalador grava `dhcp4: true` nas duas interfaces. Os IPs do projeto (`.10` a `.13`) ficam fora da faixa do DHCP, então não há conflito, mas a `enp0s8` precisa de `dhcp4: false`. Se só fosse acrescentado o IP fixo, a interface ficaria com dois endereços (o do DHCP e o fixo).
+Consequência: logo após a instalação, a `enp0s8` já veio com IP do DHCP (`.102` na `app-a`, `.104` na `app-b`, `.103` na `db`), porque o instalador grava `dhcp4: true` nas duas interfaces. Os IPs do projeto (`.10` a `.13`) ficam fora da faixa do DHCP, então não há conflito, mas a `enp0s8` precisa de `dhcp4: false`. Se só fosse acrescentado o IP fixo, a interface ficaria com dois endereços (o do DHCP e o fixo).
 
 ## Netplan
 
@@ -60,7 +60,7 @@ network:
 
 YAML usa espaços (nunca Tab) para a indentação, e ela define a hierarquia.
 
-Os arquivos de cada VM ficam em [`infra/netplan/`](../infra/netplan/). Até agora existem os da `app-a` e da `db`; os da `lb` e da `app-b` serão acrescentados quando o IP for aplicado (**pendente**).
+Os arquivos de cada VM ficam em [`infra/netplan/`](../infra/netplan/). Até agora existem os da `app-a`, da `app-b` e da `db`; o da `lb` será acrescentado quando o IP for aplicado (**pendente**). Os comandos usados para gravar e aplicar o arquivo, um a um, estão em [comandos-vms.md](comandos-vms.md#parte-3--configurar-dentro-da-vm).
 
 ### Aplicar
 
@@ -71,7 +71,7 @@ sudo netplan apply
 
 `sudo netplan try` é uma alternativa ao digitar direto no console: aplica a configuração e desfaz sozinho em 120 s se não for confirmada com Enter. Como a configuração foi digitada remotamente pelo console (sem como apertar Enter no momento certo), foi usado `netplan apply`.
 
-Na `db`, o arquivo original foi guardado antes em `~/50-cloud-init.yaml.bak`.
+Na `app-b` e na `db`, o arquivo original foi guardado antes em `50-cloud-init.yaml.bak` (na `db`, em `~/50-cloud-init.yaml.bak`).
 
 ### Desativar a rede do cloud-init
 
@@ -81,7 +81,7 @@ O cloud-init pode reescrever o `50-cloud-init.yaml` no boot e trazer o `dhcp4: t
 echo 'network: {config: disabled}' | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 ```
 
-Aplicado na `app-a` e na `db`.
+Aplicado na `app-a`, na `app-b` e na `db`.
 
 ## Testes
 
@@ -106,14 +106,14 @@ Para conferir que a configuração é permanente, reiniciar a VM (`sudo reboot`)
 
 ### Resultados
 
-| Teste | app-a | db |
-| --- | --- | --- |
-| `hostname` | `app-a` | `db` |
-| `ip -br a` | `enp0s8` só com `192.168.56.11/24` | `enp0s8` só com `192.168.56.13/24` |
-| `ip route` | uma rota default, via `enp0s3` | uma rota default, via `enp0s3` |
-| `ping ubuntu.com` | 3/3 | 3/3 |
-| Ping do Windows | ok | 3/3, porta 22 aberta |
-| `ssh` do Windows | — | **pendente** (confirmar login) |
-| `ping 192.168.56.10` (lb) | falha: *Destination Host Unreachable* | falha: *Destination Host Unreachable* |
+| Teste | app-a | app-b | db |
+| --- | --- | --- | --- |
+| `hostname` | `app-a` | `app-b` | `db` |
+| `ip -br a` | `enp0s8` só com `192.168.56.11/24` | `enp0s8` só com `192.168.56.12/24` | `enp0s8` só com `192.168.56.13/24` |
+| `ip route` | uma rota default, via `enp0s3` | — | uma rota default, via `enp0s3` |
+| `ping ubuntu.com` | 3/3 | 2/2 | 3/3 |
+| Ping do Windows | ok | ok | 3/3, porta 22 aberta |
+| `ssh` do Windows | — | — | **pendente** (confirmar login) |
+| `ping 192.168.56.10` (lb) | falha: *Destination Host Unreachable* | falha | falha: *Destination Host Unreachable* |
 
 O ping para a `lb` falha porque a `lb` ainda não tem o IP `.10`. *Destination Host Unreachable* significa que a VM perguntou na rede (ARP) quem é o `.10` e ninguém respondeu: o problema está na `lb`, não em quem faz o ping. **Pendente** até a `lb` receber o IP fixo.

@@ -1,6 +1,6 @@
 # Criação das máquinas virtuais
 
-Registro de como as quatro VMs do projeto foram criadas e instaladas. A configuração de rede (netplan, IPs fixos) está em [rede.md](rede.md).
+Registro de como as quatro VMs do projeto foram criadas e instaladas. A configuração de rede (netplan, IPs fixos) está em [rede.md](rede.md), e o passo a passo com cada comando explicado está em [comandos-vms.md](comandos-vms.md).
 
 > Situação em 23/10/2026. Itens marcados como **pendente** ainda não foram concluídos ou testados.
 
@@ -10,7 +10,7 @@ Registro de como as quatro VMs do projeto foram criadas e instaladas. A configur
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | VM 1 | `lb` | Balanceador Nginx | 192.168.56.10 | 1 GB | 1 | 10 GB | Instalação do Ubuntu em andamento; IP **pendente** |
 | VM 2 | `app-a` | Nó A da aplicação | 192.168.56.11 | 2 GB | 2 | 10 GB | Instalada, IP fixo aplicado e testado |
-| VM 3 | `app-b` | Nó B da aplicação | 192.168.56.12 | 2 GB | 2 | 10 GB | Instalada; IP **pendente** |
+| VM 3 | `app-b` | Nó B da aplicação | 192.168.56.12 | 2 GB | 2 | 10 GB | Instalada, IP fixo aplicado e testado |
 | VM 4 | `db` | Banco PostgreSQL | 192.168.56.13 | 2 GB | 2 | 15 GB | Instalada, IP fixo aplicado e testado |
 
 O nome da VM no VirtualBox e o hostname do Ubuntu são iguais, e indicam a função da máquina (`lb` = *load balancer*). Hostnames só aceitam letras, números e hífen.
@@ -39,7 +39,7 @@ Os discos são dinâmicos: o arquivo `.vdi` só cresce conforme o uso. No total 
 
 ## Criação com VBoxManage
 
-As VMs foram criadas pela linha de comando do VirtualBox. Exemplo da `app-a`; nas outras muda o nome, a memória, as CPUs e o tamanho do disco conforme a tabela acima.
+As VMs foram criadas pela linha de comando do VirtualBox. A explicação de cada comando e opção está em [comandos-vms.md](comandos-vms.md#parte-1--criar-a-vm-no-host-powershell-windows). Exemplo da `app-a`; nas outras muda o nome, a memória, as CPUs e o tamanho do disco conforme a tabela acima.
 
 ```powershell
 # 1. Cria e registra a VM (arquivo .vbox) em F:\UNIP\VMs\app-a
@@ -102,7 +102,7 @@ ping -c 3 ubuntu.com
 | --- | --- | --- |
 | lb | **pendente** (instalação em andamento) | **pendente** |
 | app-a | `app-a` (após correção, ver abaixo) | ok |
-| app-b | ok (Ubuntu instalado, login `sdadmin` no console) | `enp0s3` com 10.0.2.15 |
+| app-b | `app-b` | ok |
 | db | `db` | ok |
 
 ## Problemas encontrados e soluções
@@ -146,7 +146,6 @@ Parte da configuração foi feita digitando no console das VMs a partir do host,
 ## Pendências
 
 - [ ] `lb`: concluir a instalação, fixar `192.168.56.10` e testar.
-- [ ] `app-b`: fixar `192.168.56.12` e testar.
 - [ ] `db`: confirmar o login `ssh sdadmin@192.168.56.13` a partir do Windows (ping e porta 22 já respondem).
 - [ ] Ping de todas as VMs para a `lb` (`ping -c 3 192.168.56.10`), que depende do item acima.
 - [ ] `db`: decidir se expande o LVM para os 15 GB.
