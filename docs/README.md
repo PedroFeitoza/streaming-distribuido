@@ -28,6 +28,7 @@
 | [02-balanceamento.md](03-testes/02-balanceamento.md) | Teste de balanceamento round-robin pela `lb` |
 | [03-teste-de-queda.md](03-testes/03-teste-de-queda.md) | Teste de queda de um nó, **simulado** na `lb` com `iptables` (a queda real segue pendente) |
 | [04-teste-da-db.md](03-testes/04-teste-da-db.md) | Instalação e configuração do PostgreSQL na `db`, criação das tabelas e teste de conexão como `app_streaming` a partir de `app-a` e `app-b` |
+| [05-implantacao-da-app.md](03-testes/05-implantacao-da-app.md) | Implantação da aplicação base (Express e `/teste-banco`) em `app-a` e `app-b`, e teste de balanceamento com o banco |
 
 ### Fora das pastas numeradas
 

@@ -48,7 +48,7 @@ A primeira tentativa a partir da `app-a` deu `password authentication failed for
 
 ## Pendente
 
-- Colocar a senha do `app_streaming` em `/etc/streaming.env` nos dois nós (arquivo com permissão `600`) e testar a rota `/teste-banco` da etapa 2 da aplicação.
+- ~~Colocar a senha do `app_streaming` em `/etc/streaming.env` nos dois nós~~: feito, ver [05-implantacao-da-app.md](05-implantacao-da-app.md).
 - Os comandos com `sudo` foram digitados por Pedro, por SSH com `ssh -t`, informando a senha do `sdadmin`; **nenhum sudo sem senha foi criado** na `db`, na `app-a` nem na `app-b`.
 - Confirmar no YouTube os IDs e as durações dos três vídeos.
 - Decidir sobre a expansão do LVM da `db` (continua com 9,75 GB).
