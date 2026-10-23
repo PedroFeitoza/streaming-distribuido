@@ -170,6 +170,5 @@ Parte da configuração foi feita digitando no console das VMs a partir do host,
 ## Pendências
 
 - [ ] `lb`: atualizar o sistema (`sudo apt update && sudo apt upgrade`), porque a instalação foi interrompida na fase de atualizações.
-- [ ] Remover o acesso de laboratório ao fim do trabalho (ver [Acesso de laboratório](#acesso-de-laboratório)).
-- [ ] `db`: confirmar o login `ssh sdadmin@192.168.56.13` a partir do Windows (ping e porta 22 já respondem).
+- [ ] Remover o acesso de laboratório da `lb` ao fim do trabalho (chave `claude-lab` e `/etc/sudoers.d/90-lab`) (ver [Acesso de laboratório](#acesso-de-laboratório)).
 - [ ] `db`: decidir se expande o LVM para os 15 GB.

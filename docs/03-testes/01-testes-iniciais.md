@@ -125,14 +125,14 @@ Cada VM foi reiniciada do Windows com `ssh -t sdadmin@<IP> 'sudo reboot'`, e dep
 | --- | --- | --- | --- | --- | --- |
 | app-a | 06:10:04 | as primeiras tentativas de SSH deram *timeout* enquanto a VM subia; depois funcionou | `enp0s3` `10.0.2.15/24`; `enp0s8` `192.168.56.11/24` (só esse IPv4) | uma só `default via 10.0.2.2 dev enp0s3`; `192.168.56.0/24` com `src 192.168.56.11` | **ok**: IP fixo e hostname mantidos |
 | app-b | 06:15:11 | a primeira tentativa deu *timeout*; a seguinte funcionou | `enp0s3` `10.0.2.15/24`; `enp0s8` `192.168.56.12/24` (só esse IPv4) | uma só `default via 10.0.2.2 dev enp0s3`; `192.168.56.0/24` com `src 192.168.56.12` | **ok**: IP fixo e hostname mantidos |
-| db | 06:17:04 | travou no boot: console com *Call Trace* do kernel (cerca de 575 s de uptime), sem login e sem rede (ping e SSH em *timeout*); após `VBoxManage controlvm db reset`, subiu em cerca de 2 min | `enp0s8` `192.168.56.13/24` | uma só `default` pelo NAT | **ok** depois do reset: IP fixo e hostname `db` mantidos; ping 3/3 para a `lb` |
+| db | 06:17:04 | travou no boot: console com *Call Trace* do kernel (cerca de 575 s de uptime), sem login e sem rede (ping e SSH em *timeout*); após `VBoxManage controlvm db reset`, subiu em cerca de 2 min; do Windows, a primeira tentativa de SSH deu *timeout* (VM ainda subindo) e a segunda funcionou | `enp0s3` `10.0.2.15/24`; `enp0s8` `192.168.56.13/24` (só esse IPv4) | uma só `default via 10.0.2.2 dev enp0s3`; `192.168.56.0/24` com `src 192.168.56.13` | **ok** depois do reset: IP fixo e hostname `db` mantidos; ping 3/3 para a `lb` |
 
 Observações:
 
 - O *timeout* do SSH logo após o `reboot` é esperado: a VM ainda está subindo e a porta 22 não responde. Bastou repetir o comando.
 - O boot demorou mais do que o normal com as quatro VMs reiniciando quase juntas no mesmo PC (CPU do host em cerca de 40% a 55%). A app-b levou cerca de 3 minutos até o login e parecia parada em "Loading essential drivers". Convém reiniciar uma VM de cada vez e esperar o login antes de reiniciar a próxima.
 - As rotas `181.213.132.4` e `181.213.132.5` via `10.0.2.2` vêm do DHCP do NAT do VirtualBox e são inofensivas: continua havendo uma única rota padrão, pelo NAT.
-- Os resultados da app-b foram conferidos em captura de tela do PowerShell; os da app-a, no relato da execução.
+- Os resultados da app-b e da db foram conferidos em capturas de tela do PowerShell; os da app-a, no relato da execução.
 
 ## Acesso remoto do grupo
 
@@ -172,8 +172,9 @@ Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorize
 
 - [ ] `lb`: `sudo apt update && sudo apt upgrade` (o Nginx e o upstream já estão feitos, ver [04-nginx-e-upstream.md](../01-especificacoes/04-nginx-e-upstream.md)).
 - [ ] `lb`: conferir `ip route` (uma só rota padrão pelo NAT), como nas outras VMs.
-- [ ] Queda real de um nó (`sudo systemctl stop streaming` no nó), pendente porque o `sudo` dos nós pede senha; a versão simulada na `lb` está em [03-teste-de-queda.md](03-teste-de-queda.md).
-- [ ] SSH por chave no sentido inverso (nós para a `lb`) e entre os nós, se o grupo quiser.
+- [ ] Queda real de um nó (`sudo systemctl stop streaming` no nó, depois `start`), pendente porque o `sudo` dos nós pede senha; a versão simulada na `lb` está em [03-teste-de-queda.md](03-teste-de-queda.md).
+- [ ] Queda dos **dois** nós ao mesmo tempo (esperado: HTTP 502 da `lb`).
+- [ ] SSH por chave no sentido inverso (nós para a `lb`) e entre os nós, se o grupo quiser. O ping dos nós para a `lb` e entre os nós já foi testado.
 - [ ] Colega entrar na VPN e pingar/acessar uma VM.
 - [ ] Decidir sobre a expansão do LVM da db.
-- [ ] Remover o acesso de laboratório da `lb`.
+- [ ] Remover o acesso de laboratório da `lb` no fim do trabalho: a chave `claude-lab` em `authorized_keys` e o arquivo `/etc/sudoers.d/90-lab`.
