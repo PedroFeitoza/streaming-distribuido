@@ -126,6 +126,7 @@ Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorize
 - [ ] Ping de app-a, app-b e db para a `lb`.
 - [ ] Reiniciar app-a, app-b e db e conferir que o IP fixo continua (`ip -br a`); a `lb` já foi testada.
 - [ ] `app-b`: reconferir os IPs da `enp0s8` e a rota padrão única (`ip -br a`, `ip route`).
+- [ ] SSH por chave da `lb` para app-a, app-b e db (ver [ssh-entre-vms.md](ssh-entre-vms.md)).
 - [ ] Colega entrar na VPN e pingar/acessar uma VM.
 - [ ] Decidir sobre a expansão do LVM da db.
 - [ ] Remover o acesso de laboratório da `lb`.
