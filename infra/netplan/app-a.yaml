@@ -1,0 +1,11 @@
+# /etc/netplan/50-cloud-init.yaml na VM app-a
+# enp0s3 = NAT (internet por DHCP); enp0s8 = host-only com IP fixo, sem gateway
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: true
+    enp0s8:
+      dhcp4: false
+      addresses:
+        - 192.168.56.11/24
