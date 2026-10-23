@@ -25,9 +25,9 @@ Usuário administrador em todas as VMs: `sdadmin` (o mesmo nas quatro, para faci
 | Hipervisor | VirtualBox 7.2 |
 | Pasta das VMs | `<PASTA_DAS_VMS>` (qualquer pasta num disco com espaço livre) |
 | ISO | `<PASTA_DA_ISO>\ubuntu-24.04.5-live-server-amd64.iso` (Ubuntu Server 24.04.5 LTS) |
+| Rede host-only | `VirtualBox Host-Only Ethernet Adapter`, host em `192.168.56.1` |
 
 Nos comandos, `<PASTA_DAS_VMS>` e `<PASTA_DA_ISO>` são marcadores: troque pelos caminhos da sua máquina.
-| Rede host-only | `VirtualBox Host-Only Ethernet Adapter`, host em `192.168.56.1` |
 
 A ISO foi baixada de `releases.ubuntu.com` e o SHA256 foi conferido com o valor publicado pela Canonical. A mesma ISO foi reutilizada nas quatro VMs.
 
