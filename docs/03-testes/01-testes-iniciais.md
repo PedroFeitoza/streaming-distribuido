@@ -13,7 +13,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | app-b (.12) | ok | ok | ok (lb, app-a e db) | ok |
 | db (.13) | ok | ok | ok (lb, app-a e app-b) | ok |
 
-Reinício: IP fixo mantido na `lb`, `app-a` e `app-b`; a `db` ficou **pendente** (travou no boot).
+Reinício: IP fixo mantido nas quatro VMs (a `db` precisou de um reset depois de travar no boot).
 
 ## Como ler as tabelas
 
@@ -68,7 +68,7 @@ Reinício: IP fixo mantido na `lb`, `app-a` e `app-b`; a `db` ficou **pendente**
 | Ping cruzado | `ping` para `.10`, `.11` e `.12` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.13 hostname` (Windows) | `db`, sem pedir senha | `db`, sem senha |
 | SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.13 hostname` (lb) | `db`, sem senha | `db`, sem senha (ver [03-ssh-entre-vms.md](../01-especificacoes/03-ssh-entre-vms.md)) |
-| IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.13/24` | **pendente**: a VM travou no boot (ver [Teste de reinício](#teste-de-reinício)) |
+| IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.13/24` | mantido, depois de recuperar o travamento no boot (ver [Teste de reinício](#teste-de-reinício)) |
 | Tamanho de `/` | `df -h /` (VM) | cerca de 15 GB | 9,75 GB, porque o LVM ficou marcado (ver [Falhas](#falhas-e-causas)) |
 
 ## lb (192.168.56.10)
@@ -125,12 +125,12 @@ Cada VM foi reiniciada do Windows com `ssh -t sdadmin@<IP> 'sudo reboot'`, e dep
 | --- | --- | --- | --- | --- | --- |
 | app-a | 06:10:04 | as primeiras tentativas de SSH deram *timeout* enquanto a VM subia; depois funcionou | `enp0s3` `10.0.2.15/24`; `enp0s8` `192.168.56.11/24` (só esse IPv4) | uma só `default via 10.0.2.2 dev enp0s3`; `192.168.56.0/24` com `src 192.168.56.11` | **ok**: IP fixo e hostname mantidos |
 | app-b | 06:15:11 | a primeira tentativa deu *timeout*; a seguinte funcionou | `enp0s3` `10.0.2.15/24`; `enp0s8` `192.168.56.12/24` (só esse IPv4) | uma só `default via 10.0.2.2 dev enp0s3`; `192.168.56.0/24` com `src 192.168.56.12` | **ok**: IP fixo e hostname mantidos |
-| db | 06:17:04 | travou no boot: tela com *Call Trace* do kernel, sem login e sem rede | não lido | não lida | **pendente**: aguardando o reset da VM e novo teste |
+| db | 06:17:04 | travou no boot: console com *Call Trace* do kernel (cerca de 575 s de uptime), sem login e sem rede (ping e SSH em *timeout*); após `VBoxManage controlvm db reset`, subiu em cerca de 2 min | `enp0s8` `192.168.56.13/24` | uma só `default` pelo NAT | **ok** depois do reset: IP fixo e hostname `db` mantidos; ping 3/3 para a `lb` |
 
 Observações:
 
 - O *timeout* do SSH logo após o `reboot` é esperado: a VM ainda está subindo e a porta 22 não responde. Bastou repetir o comando.
-- O boot demorou mais do que o normal por causa do reinício de várias VMs quase juntas no mesmo PC (1 GB a 2 GB de RAM cada, discos no mesmo volume). Convém reiniciar uma de cada vez e esperar o SSH voltar.
+- O boot demorou mais do que o normal com as quatro VMs reiniciando quase juntas no mesmo PC (CPU do host em cerca de 40% a 55%). A app-b levou cerca de 3 minutos até o login e parecia parada em "Loading essential drivers". Convém reiniciar uma VM de cada vez e esperar o login antes de reiniciar a próxima.
 - As rotas `181.213.132.4` e `181.213.132.5` via `10.0.2.2` vêm do DHCP do NAT do VirtualBox e são inofensivas: continua havendo uma única rota padrão, pelo NAT.
 - Os resultados da app-b foram conferidos em captura de tela do PowerShell; os da app-a, no relato da execução.
 
@@ -161,6 +161,7 @@ Detalhes e comandos em [acesso-remoto.md](../acesso-remoto.md), no PR #2.
 | Primeiro pacote do ping do Windows se perde | O Windows ainda descobre o endereço da VM (ARP). | Normal; os pacotes seguintes respondem. |
 | `/` da db com 9,75 GB em vez de 15 GB | LVM marcado no instalador. | Mantido por enquanto; pode ser expandido com `lvextend` e `resize2fs`. |
 | Aviso de mídia (cdrom) no reboot | O Ubuntu pede para remover a ISO. | Inofensivo; Enter. |
+| `db` travou no boot depois de `sudo reboot`: console cheio de *Call Trace* do kernel, sem rede | **Hipótese:** o PC estava sobrecarregado com as quatro VMs reiniciando ao mesmo tempo. Não há log para confirmar: `journalctl -k -b -1` não retornou nada. | `VBoxManage controlvm db reset` (com o ok do Pedro). A VM subiu em cerca de 2 min com o IP `192.168.56.13/24`. **Lição:** reiniciar uma VM de cada vez e esperar o login. |
 | *Forwarding: Disabled* no Tailscale do Windows | Repasse de pacotes ainda não ligado. | **Pendente**: verificar quando um colega testar; plano B é anunciar a rota a partir da `lb`. |
 
 ## Acesso de laboratório (remover no fim)
@@ -171,7 +172,6 @@ Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorize
 
 - [ ] `lb`: `sudo apt update && sudo apt upgrade` (o Nginx e o upstream já estão feitos, ver [04-nginx-e-upstream.md](../01-especificacoes/04-nginx-e-upstream.md)).
 - [ ] `lb`: conferir `ip route` (uma só rota padrão pelo NAT), como nas outras VMs.
-- [ ] `db`: depois de recuperar o travamento no boot, conferir `hostname`, `ip -br a` e `ip route` e confirmar que o IP `192.168.56.13/24` persiste. A `lb`, a `app-a` e a `app-b` já foram testadas.
 - [ ] Queda real de um nó (`sudo systemctl stop streaming` no nó), pendente porque o `sudo` dos nós pede senha; a versão simulada na `lb` está em [03-teste-de-queda.md](03-teste-de-queda.md).
 - [ ] SSH por chave no sentido inverso (nós para a `lb`) e entre os nós, se o grupo quiser.
 - [ ] Colega entrar na VPN e pingar/acessar uma VM.
