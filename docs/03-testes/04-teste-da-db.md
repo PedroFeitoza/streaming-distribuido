@@ -40,7 +40,7 @@ Feitos de cada nó, pela rede, com `psql -h 192.168.56.13 -U app_streaming -d st
 
 Isso mostra que a aplicação consegue ler o catálogo e gravar reproduções, mas não consegue apagar o catálogo. O `id` e a `data_hora` vieram do próprio banco.
 
-Depois do teste, as duas linhas de reprodução foram apagadas e a tabela foi esvaziada com `TRUNCATE`, que também zera o contador de `id`. A contagem final de `reproducoes` foi 0.
+Depois do teste, as duas linhas de reprodução foram apagadas e a tabela foi esvaziada com `TRUNCATE ... RESTART IDENTITY`, que também zera o contador de `id`. A contagem final de `reproducoes` foi 0.
 
 ## Problema encontrado: senha recusada
 
@@ -49,5 +49,7 @@ A primeira tentativa a partir da `app-a` deu `password authentication failed for
 ## Pendente
 
 - Colocar a senha do `app_streaming` em `/etc/streaming.env` nos dois nós (arquivo com permissão `600`) e testar a rota `/teste-banco` da etapa 2 da aplicação.
-- Remover o acesso de laboratório criado para este trabalho: `/etc/sudoers.d/90-lab` na `db` (e, se criado, na `app-a` e na `app-b`).
+- Os comandos com `sudo` foram digitados por Pedro, por SSH com `ssh -t`, informando a senha do `sdadmin`; **nenhum sudo sem senha foi criado** na `db`, na `app-a` nem na `app-b`.
+- Confirmar no YouTube os IDs e as durações dos três vídeos.
+- Decidir sobre a expansão do LVM da `db` (continua com 9,75 GB).
 - Guardar uma cópia dos arquivos `postgresql.conf` e `pg_hba.conf` ajustados em [`infra/banco/`](../../infra/banco/).
