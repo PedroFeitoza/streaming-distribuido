@@ -260,9 +260,22 @@ Também é medido o comportamento durante uma falha: com o sistema sob carga, um
 
 ```
 streaming-distribuido/
-├── app/      # Aplicação Node.js + Express
-├── banco/    # Scripts SQL: esquema, carga do catálogo e massa de teste
-├── infra/    # Configurações de netplan, Nginx e systemd
-├── testes/   # Comandos e resultados dos testes de carga e de falha
+├── app/                 # Aplicação Node.js + Express (copiada para /opt/streaming nos nós)
+│   ├── src/             # Código-fonte: rotas, acesso ao banco, páginas
+│   └── public/videos/   # Arquivos de vídeo servidos pela aplicação
+├── banco/               # Scripts SQL: esquema, carga do catálogo e massa de teste
+├── infra/               # Arquivos de configuração das máquinas
+│   ├── balanceador/     # VM 1: site do Nginx com o upstream dos dois nós
+│   ├── no/              # VM 2 e VM 3: streaming.service e streaming.env.example
+│   ├── banco/           # VM 4: ajustes do postgresql.conf e do pg_hba.conf
+│   └── netplan/         # Um arquivo de netplan por máquina
+├── scripts/             # Scripts de instalação e de implantação
+├── testes/              # Comandos e resultados dos testes de carga e de falha
+├── docs/                # Diagramas e material de apoio à apresentação
+├── .gitignore
 └── README.md
 ```
+
+As pastas ainda vazias contêm um arquivo `.gitkeep`, que só existe para o Git versionar a pasta. Ele pode ser apagado quando a pasta receber o primeiro arquivo.
+
+Arquivos com senha nunca entram no repositório: o `.gitignore` bloqueia `.env` e `*.env`, permitindo apenas os modelos `*.env.example`.
