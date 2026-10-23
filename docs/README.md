@@ -12,6 +12,7 @@
 | [02-rede.md](01-especificacoes/02-rede.md) | Adaptadores NAT e host-only, DHCP da host-only, netplan explicado, cloud-init |
 | [03-ssh-entre-vms.md](01-especificacoes/03-ssh-entre-vms.md) | Etapa 3: SSH com chaves da `lb` para as outras VMs |
 | [04-nginx-e-upstream.md](01-especificacoes/04-nginx-e-upstream.md) | Etapa 4: Nginx na `lb` com upstream para `app-a` e `app-b` |
+| [05-banco-de-dados.md](01-especificacoes/05-banco-de-dados.md) | Banco `streaming`: as três tabelas, SQL de criação, dados de exemplo, campo `arquivo` com vídeo do YouTube e permissões |
 
 ### 02-comandos: o que foi digitado, com explicação
 
@@ -31,7 +32,7 @@
 
 - `acesso-remoto.md`: acesso do grupo às VMs pela VPN (entra com o PR #2; depois do merge, pode ser movido para uma pasta `04-acesso-remoto/`).
 
-Os arquivos de configuração das máquinas ficam em [`infra/`](../infra/), e os scripts em [`scripts/`](../scripts/).
+Os arquivos de configuração das máquinas ficam em [`infra/`](../infra/), os scripts SQL em [`banco/`](../banco/) e os scripts em [`scripts/`](../scripts/).
 
 ## Padrão para novos documentos
 
