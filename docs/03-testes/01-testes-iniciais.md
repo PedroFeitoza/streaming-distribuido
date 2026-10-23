@@ -13,6 +13,8 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | app-b (.12) | ok | ok | ok (lb, app-a e db) | ok |
 | db (.13) | ok | ok | ok (lb, app-a e app-b) | ok |
 
+Reinício: IP fixo mantido na `lb`, `app-a` e `app-b`; a `db` ficou **pendente** (travou no boot).
+
 ## Como ler as tabelas
 
 - **Comando:** onde roda: `(VM)` no console ou SSH da própria VM, `(Windows)` no PowerShell do host.
@@ -34,7 +36,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Ping cruzado | `ping` para `.10`, `.12` e `.13` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.11 hostname` (Windows) | `app-a`, sem pedir senha | `app-a`, sem senha |
 | SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.11 hostname` (lb) | `app-a`, sem senha | `app-a`, sem senha |
-| IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.11/24` | **pendente** |
+| IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.11/24` | mantido (ver [Teste de reinício](#teste-de-reinício)) |
 
 ## app-b (192.168.56.12)
 
@@ -50,7 +52,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Ping cruzado | `ping` para `.10`, `.11` e `.13` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.12 hostname` (Windows) | `app-b`, sem pedir senha | `app-b`, sem senha |
 | SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.12 hostname` (lb) | `app-b`, sem senha | `app-b`, sem senha |
-| IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.12/24` | **pendente** |
+| IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.12/24` | mantido (ver [Teste de reinício](#teste-de-reinício)) |
 
 ## db (192.168.56.13)
 
@@ -66,7 +68,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Ping cruzado | `ping` para `.10`, `.11` e `.12` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.13 hostname` (Windows) | `db`, sem pedir senha | `db`, sem senha |
 | SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.13 hostname` (lb) | `db`, sem senha | `db`, sem senha (ver [03-ssh-entre-vms.md](../01-especificacoes/03-ssh-entre-vms.md)) |
-| IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.13/24` | **pendente** |
+| IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.13/24` | **pendente**: a VM travou no boot (ver [Teste de reinício](#teste-de-reinício)) |
 | Tamanho de `/` | `df -h /` (VM) | cerca de 15 GB | 9,75 GB, porque o LVM ficou marcado (ver [Falhas](#falhas-e-causas)) |
 
 ## lb (192.168.56.10)
@@ -115,6 +117,23 @@ Feita por SSH em app-a, app-b e db, sem alterar nada: `ip -br a`, `ip route`, `p
 
 O `ip -br a` e o `ip route` da `lb` ainda não foram lidos por essa verificação; o lado da `lb` está na seção anterior.
 
+## Teste de reinício
+
+Cada VM foi reiniciada do Windows com `ssh -t sdadmin@<IP> 'sudo reboot'`, e depois conferida com `ssh sdadmin@<IP> 'hostname; ip -br a; ip route'`. As três foram reiniciadas em sequência, com as outras VMs ligadas.
+
+| VM | Reinício (UTC) | Depois do boot | `ip -br a` | `ip route` | Resultado |
+| --- | --- | --- | --- | --- | --- |
+| app-a | 06:10:04 | as primeiras tentativas de SSH deram *timeout* enquanto a VM subia; depois funcionou | `enp0s3` `10.0.2.15/24`; `enp0s8` `192.168.56.11/24` (só esse IPv4) | uma só `default via 10.0.2.2 dev enp0s3`; `192.168.56.0/24` com `src 192.168.56.11` | **ok**: IP fixo e hostname mantidos |
+| app-b | 06:15:11 | a primeira tentativa deu *timeout*; a seguinte funcionou | `enp0s3` `10.0.2.15/24`; `enp0s8` `192.168.56.12/24` (só esse IPv4) | uma só `default via 10.0.2.2 dev enp0s3`; `192.168.56.0/24` com `src 192.168.56.12` | **ok**: IP fixo e hostname mantidos |
+| db | 06:17:04 | travou no boot: tela com *Call Trace* do kernel, sem login e sem rede | não lido | não lida | **pendente**: aguardando o reset da VM e novo teste |
+
+Observações:
+
+- O *timeout* do SSH logo após o `reboot` é esperado: a VM ainda está subindo e a porta 22 não responde. Bastou repetir o comando.
+- O boot demorou mais do que o normal por causa do reinício de várias VMs quase juntas no mesmo PC (1 GB a 2 GB de RAM cada, discos no mesmo volume). Convém reiniciar uma de cada vez e esperar o SSH voltar.
+- As rotas `181.213.132.4` e `181.213.132.5` via `10.0.2.2` vêm do DHCP do NAT do VirtualBox e são inofensivas: continua havendo uma única rota padrão, pelo NAT.
+- Os resultados da app-b foram conferidos em captura de tela do PowerShell; os da app-a, no relato da execução.
+
 ## Acesso remoto do grupo
 
 | Teste | Comando | Esperado | Obtido |
@@ -152,7 +171,7 @@ Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorize
 
 - [ ] `lb`: `sudo apt update && sudo apt upgrade` (o Nginx e o upstream já estão feitos, ver [04-nginx-e-upstream.md](../01-especificacoes/04-nginx-e-upstream.md)).
 - [ ] `lb`: conferir `ip route` (uma só rota padrão pelo NAT), como nas outras VMs.
-- [ ] Reiniciar app-a, app-b e db e conferir que o IP fixo continua (`ip -br a`); a `lb` já foi testada. Não foi feito a partir da `lb` porque o `sudo` dessas VMs pede senha; o IP seguiu correto com 1h40 de uptime.
+- [ ] `db`: depois de recuperar o travamento no boot, conferir `hostname`, `ip -br a` e `ip route` e confirmar que o IP `192.168.56.13/24` persiste. A `lb`, a `app-a` e a `app-b` já foram testadas.
 - [ ] Queda real de um nó (`sudo systemctl stop streaming` no nó), pendente porque o `sudo` dos nós pede senha; a versão simulada na `lb` está em [03-teste-de-queda.md](03-teste-de-queda.md).
 - [ ] SSH por chave no sentido inverso (nós para a `lb`) e entre os nós, se o grupo quiser.
 - [ ] Colega entrar na VPN e pingar/acessar uma VM.
