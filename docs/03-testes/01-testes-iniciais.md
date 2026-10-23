@@ -76,7 +76,7 @@ Reinício: IP fixo mantido nas quatro VMs (a `db` precisou de um reset depois de
 | Teste | Comando | Esperado | Obtido |
 | --- | --- | --- | --- |
 | VM criada | `VBoxManage showvminfo lb` (Windows) | 1024 MB, 1 CPU, NAT + host-only, disco e ISO | conforme esperado |
-| Instalação | tela do console | instalador concluído | interrompido na fase "Updating system" (1 GB de RAM, lenta); atualizações **pendentes** |
+| Instalação | tela do console | instalador concluído | interrompido na fase "Updating system" (1 GB de RAM, lenta); atualizações aplicadas depois com `apt upgrade` |
 | Interfaces e IPs | `ip -br a` (VM) | `enp0s8` com `192.168.56.10/24` | `192.168.56.10/24` |
 | Internet pelo NAT | `ping ubuntu.com` (VM) | respostas | 0% de perda |
 | Ping e SSH do Windows | `ssh sdadmin@192.168.56.10` (Windows) | abre sessão | ok |
@@ -150,7 +150,7 @@ Detalhes e comandos em [acesso-remoto.md](../acesso-remoto.md), no PR #2.
 
 | O que falhou | Causa | Solução |
 | --- | --- | --- |
-| Instalação da `lb` parada em "Updating system" | Só 1 GB de RAM; a fase de atualizações de segurança é lenta. Os avisos `perl: warning: Setting locale failed` são inofensivos. | Instalação interrompida e VM reiniciada; `sudo apt update && sudo apt upgrade` fica **pendente**. |
+| Instalação da `lb` parada em "Updating system" | Só 1 GB de RAM; a fase de atualizações de segurança é lenta. Os avisos `perl: warning: Setting locale failed` são inofensivos. | Instalação interrompida e VM reiniciada; as atualizações foram aplicadas depois com `sudo apt update && sudo apt upgrade`. |
 | `app-b` apareceu com dois IPs na `enp0s8` (`.12` e `.104`) | O `.104` veio do DHCP da host-only antes do ajuste para `dhcp4: false`. | Resolvido: na rodada completa o `.104` não aparece mais. |
 | `enp0s8` veio com IP do DHCP (`.102`, `.104`, `.103`, `.105`) | A rede host-only tem DHCP ativo, e o instalador grava `dhcp4: true` nas duas interfaces. | `dhcp4: false` na `enp0s8` e editar o `50-cloud-init.yaml`, em vez de acrescentar outro arquivo. |
 | `sudo` recusou a senha na app-b (*3 incorrect password attempts*) | Erro de digitação da senha; o comando seguinte, enviado pelo console, caiu no campo de senha e gastou as tentativas. | Rodar `sudo -v` de novo, olhar a tela antes de enviar outro comando e digitar a senha com calma. |
@@ -170,7 +170,6 @@ Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorize
 
 ## Pendências
 
-- [ ] `lb`: `sudo apt update && sudo apt upgrade` (o Nginx e o upstream já estão feitos, ver [04-nginx-e-upstream.md](../01-especificacoes/04-nginx-e-upstream.md)).
 - [ ] `lb`: conferir `ip route` (uma só rota padrão pelo NAT), como nas outras VMs.
 - [ ] Queda real de um nó (`sudo systemctl stop streaming` no nó, depois `start`), pendente porque o `sudo` dos nós pede senha; a versão simulada na `lb` está em [03-teste-de-queda.md](03-teste-de-queda.md).
 - [ ] Queda dos **dois** nós ao mesmo tempo (esperado: HTTP 502 da `lb`).

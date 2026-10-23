@@ -139,7 +139,7 @@ Na `db` o LVM ficou marcado na instalação, e o `/` ficou com 9,75 GB em vez do
 
 ### Instalação da `lb` interrompida na fase de atualizações
 
-A `lb` tem só 1 GB de RAM, e o instalador ficou muito tempo na fase "Updating system", baixando e aplicando atualizações de segurança. A instalação foi interrompida nessa fase e a VM seguiu para o primeiro boot sem as atualizações. Os avisos `perl: warning: Setting locale failed` que aparecem nessa tela são inofensivos. As atualizações ficaram para depois, com `sudo apt update && sudo apt upgrade` (**pendente**).
+A `lb` tem só 1 GB de RAM, e o instalador ficou muito tempo na fase "Updating system", baixando e aplicando atualizações de segurança. A instalação foi interrompida nessa fase e a VM seguiu para o primeiro boot sem as atualizações. Os avisos `perl: warning: Setting locale failed` que aparecem nessa tela são inofensivos. As atualizações foram aplicadas depois, com `sudo apt update && sudo apt upgrade`.
 
 ### Acesso de laboratório
 
@@ -169,6 +169,5 @@ Parte da configuração foi feita digitando no console das VMs a partir do host,
 
 ## Pendências
 
-- [ ] `lb`: atualizar o sistema (`sudo apt update && sudo apt upgrade`), porque a instalação foi interrompida na fase de atualizações.
 - [ ] Remover o acesso de laboratório da `lb` ao fim do trabalho (chave `claude-lab` e `/etc/sudoers.d/90-lab`) (ver [Acesso de laboratório](#acesso-de-laboratório)).
 - [ ] `db`: decidir se expande o LVM para os 15 GB.
