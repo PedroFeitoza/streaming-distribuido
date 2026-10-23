@@ -157,7 +157,7 @@ sed -i '/claude-lab/d' ~/.ssh/authorized_keys
 
 ### Observação sobre a app-b
 
-A `app-b` apareceu com dois IPs na `enp0s8`, o fixo `192.168.56.12` e o `192.168.56.104` do DHCP. Isso indica que o `.104` pode ter ficado ativo até o DHCP expirar ou até o próximo `netplan apply` ou reinício. Deve ser reconferida com `ip -br a`, e a `enp0s8` deve ter só o `.12` (**pendente**).
+A `app-b` apareceu com dois IPs na `enp0s8`, o fixo `192.168.56.12` e o `192.168.56.104` do DHCP, que veio antes do ajuste para `dhcp4: false`. **Resolvido:** na rodada completa de testes o `.104` não aparece mais (ver [testes-iniciais.md](testes-iniciais.md)).
 
 ### Configuração pelo console com `keyboardputstring`
 
@@ -172,7 +172,5 @@ Parte da configuração foi feita digitando no console das VMs a partir do host,
 - [ ] `lb`: atualizar o sistema (`sudo apt update && sudo apt upgrade`), porque a instalação foi interrompida na fase de atualizações.
 - [ ] `lb`: instalar o Nginx e configurar o upstream para `192.168.56.11:3000` e `192.168.56.12:3000`.
 - [ ] Remover o acesso de laboratório ao fim do trabalho (ver [Acesso de laboratório](#acesso-de-laboratório)).
-- [ ] `app-b`: reconferir os IPs da `enp0s8` (ver [Observação sobre a app-b](#observação-sobre-a-app-b)).
 - [ ] `db`: confirmar o login `ssh sdadmin@192.168.56.13` a partir do Windows (ping e porta 22 já respondem).
-- [ ] Ping da app-a, app-b e db para a `lb` (`ping -c 3 192.168.56.10`); a `lb` já alcança as três.
 - [ ] `db`: decidir se expande o LVM para os 15 GB.

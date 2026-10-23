@@ -114,9 +114,9 @@ Para conferir que a configuração é permanente, reiniciar a VM (`sudo reboot`)
 | `ping ubuntu.com` | 3/3 | 2/2 | 3/3 |
 | Ping do Windows | ok | ok | 3/3, porta 22 aberta |
 | `ssh` por chave do Windows | ok | ok | ok |
-| `ping 192.168.56.10` (lb) | a confirmar | a confirmar | a confirmar |
+| `ping 192.168.56.10` (lb) | 3/3 | 3/3 | 3/3 |
 
-A `lb` alcança as três VMs (ver abaixo). O ping no sentido contrário, de cada VM para a `lb`, está **a confirmar**. Os resultados completos de todos os testes estão em [testes-iniciais.md](testes-iniciais.md); aqui ficam os da configuração de rede.
+A `lb` alcança as três VMs (ver abaixo). Os resultados completos de todos os testes estão em [testes-iniciais.md](testes-iniciais.md); aqui ficam os da configuração de rede.
 
 ### Resultados da `lb`
 
