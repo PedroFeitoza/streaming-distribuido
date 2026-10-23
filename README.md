@@ -140,7 +140,7 @@ A aplicação acessa o banco com um usuário dedicado (`app_streaming`), que tem
 
 ## Implantação
 
-O passo a passo da criação das VMs, as escolhas do instalador e os problemas encontrados estão em [docs/vms.md](docs/vms.md). A configuração de rede, com o netplan de cada máquina e os testes, está em [docs/rede.md](docs/rede.md). Os comandos usados em cada VM, com a explicação de cada um, estão em [docs/comandos-vms.md](docs/comandos-vms.md).
+O passo a passo da criação das VMs, as escolhas do instalador e os problemas encontrados estão em [docs/vms.md](docs/vms.md). A configuração de rede, com o netplan de cada máquina e os testes, está em [docs/rede.md](docs/rede.md). Os comandos usados em cada VM, com a explicação de cada um, estão em [docs/comandos-vms.md](docs/comandos-vms.md). Os testes iniciais e seus resultados estão em [docs/testes-iniciais.md](docs/testes-iniciais.md).
 
 ### 1. Rede (todas as máquinas)
 
