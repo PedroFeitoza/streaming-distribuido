@@ -153,6 +153,7 @@ Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorize
 - [ ] `lb`: `sudo apt update && sudo apt upgrade` (o Nginx e o upstream já estão feitos, ver [04-nginx-e-upstream.md](../01-especificacoes/04-nginx-e-upstream.md)).
 - [ ] `lb`: conferir `ip route` (uma só rota padrão pelo NAT), como nas outras VMs.
 - [ ] Reiniciar app-a, app-b e db e conferir que o IP fixo continua (`ip -br a`); a `lb` já foi testada. Não foi feito a partir da `lb` porque o `sudo` dessas VMs pede senha; o IP seguiu correto com 1h40 de uptime.
+- [ ] Queda real de um nó (`sudo systemctl stop streaming` no nó), pendente porque o `sudo` dos nós pede senha; a versão simulada na `lb` está em [03-teste-de-queda.md](03-teste-de-queda.md).
 - [ ] SSH por chave no sentido inverso (nós para a `lb`) e entre os nós, se o grupo quiser.
 - [ ] Colega entrar na VPN e pingar/acessar uma VM.
 - [ ] Decidir sobre a expansão do LVM da db.
