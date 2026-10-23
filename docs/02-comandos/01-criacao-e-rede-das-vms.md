@@ -1,6 +1,6 @@
 # Comandos usados nas VMs app-a, app-b e db
 
-Passo a passo dos comandos executados para criar e configurar as VMs `app-a`, `app-b` e `db` (a `lb` seguiu o mesmo roteiro, com 1 GB de RAM, 1 CPU e IP `192.168.56.10`; o netplan dela está em [`infra/netplan/lb.yaml`](../infra/netplan/lb.yaml)), com o que cada um faz e por que foi usado. O contexto e as decisões estão em [vms.md](vms.md) e [rede.md](rede.md).
+Passo a passo dos comandos executados para criar e configurar as VMs `app-a`, `app-b` e `db` (a `lb` seguiu o mesmo roteiro, com 1 GB de RAM, 1 CPU e IP `192.168.56.10`; o netplan dela está em [`infra/netplan/lb.yaml`](../../infra/netplan/lb.yaml)), com o que cada um faz e por que foi usado. O contexto e as decisões estão em [01-vms.md](../01-especificacoes/01-vms.md) e [02-rede.md](../01-especificacoes/02-rede.md).
 
 > **Sobre a exatidão:** os valores (nomes, memória, CPUs, tamanhos, caminhos, IPs) e os comandos do console são os usados. Os parâmetros do controlador de disco (`storagectl` e `storageattach`), como o nome `SATA` e as portas, não ficaram registrados; aparecem aqui na forma padrão, que dá o mesmo resultado.
 
@@ -99,7 +99,7 @@ Mostra a configuração da VM. Deve aparecer `Memory size: 2048MB`, `Number of C
 
 ## Parte 2 — Instalar o Ubuntu Server
 
-Feito pela janela da VM, no instalador. As escolhas e os motivos estão em [vms.md](vms.md#escolhas-no-instalador-do-ubuntu-server): teclado Portuguese (Brazil), Ubuntu Server sem minimized, disco inteiro sem LVM, server's name igual ao nome da VM, usuário `sdadmin`, OpenSSH marcado, nenhum snap.
+Feito pela janela da VM, no instalador. As escolhas e os motivos estão em [01-vms.md](../01-especificacoes/01-vms.md#escolhas-no-instalador-do-ubuntu-server): teclado Portuguese (Brazil), Ubuntu Server sem minimized, disco inteiro sem LVM, server's name igual ao nome da VM, usuário `sdadmin`, OpenSSH marcado, nenhum snap.
 
 ## Parte 3 — Configurar dentro da VM
 
@@ -152,7 +152,7 @@ cat /etc/netplan/50-cloud-init.yaml
 - `ip -br a` lista as interfaces e seus IPs em formato curto (`-br` = *brief*, `a` = *address*).
 - O `cat` mostra o netplan criado pelo instalador.
 
-Nas três VMs a `enp0s8` já tinha IP do DHCP da rede host-only (`.102` na app-a, `.104` na app-b, `.103` na db), porque o instalador gravou `dhcp4: true` nas duas interfaces. Por isso o arquivo foi **editado**, e não complementado por outro: um arquivo a mais deixaria a `enp0s8` com dois IPs. Detalhes em [rede.md](rede.md#dhcp-ativo-na-rede-host-only).
+Nas três VMs a `enp0s8` já tinha IP do DHCP da rede host-only (`.102` na app-a, `.104` na app-b, `.103` na db), porque o instalador gravou `dhcp4: true` nas duas interfaces. Por isso o arquivo foi **editado**, e não complementado por outro: um arquivo a mais deixaria a `enp0s8` com dois IPs. Detalhes em [02-rede.md](../01-especificacoes/02-rede.md#dhcp-ativo-na-rede-host-only).
 
 ### 3.4 Guardar uma cópia do original (app-b e db)
 
@@ -178,13 +178,13 @@ network:
 EOF
 ```
 
-Reescreve o arquivo do netplan. Na `app-b` o endereço é `192.168.56.12/24` e na `db`, `192.168.56.13/24`. Os arquivos finais de cada VM estão em [`infra/netplan/`](../infra/netplan/).
+Reescreve o arquivo do netplan. Na `app-b` o endereço é `192.168.56.12/24` e na `db`, `192.168.56.13/24`. Os arquivos finais de cada VM estão em [`infra/netplan/`](../../infra/netplan/).
 
 - `sudo tee <arquivo>` grava como root o que recebe na entrada. Um `sudo echo ... > arquivo` não funcionaria, porque o `>` é feito pelo shell do usuário, sem permissão em `/etc`.
 - `> /dev/null` só evita que o `tee` repita o conteúdo na tela.
 - `<<'EOF' ... EOF` (*heredoc*) passa várias linhas de texto ao comando. As aspas em `'EOF'` impedem o bash de interpretar `$` e outros símbolos dentro do texto.
 
-O que cada linha do YAML significa está em [rede.md](rede.md#netplan). Em resumo: a `enp0s3` (NAT) continua no DHCP e leva a rota para a internet; a `enp0s8` (host-only) fica com `dhcp4: false` e só o IP fixo, **sem gateway**, para não criar uma segunda rota padrão.
+O que cada linha do YAML significa está em [02-rede.md](../01-especificacoes/02-rede.md#netplan). Em resumo: a `enp0s3` (NAT) continua no DHCP e leva a rota para a internet; a `enp0s8` (host-only) fica com `dhcp4: false` e só o IP fixo, **sem gateway**, para não criar uma segunda rota padrão.
 
 ### 3.6 Impedir o cloud-init de reescrever a rede
 
@@ -241,7 +241,7 @@ O primeiro pacote do ping às vezes se perde, enquanto o Windows descobre o ende
 | Ping do Windows | ok | ok | 3/3, porta 22 aberta |
 | `ping 192.168.56.10` (lb) | 3/3 | 3/3 | 3/3 |
 
-Os resultados completos dos testes estão em [testes-iniciais.md](testes-iniciais.md).
+Os resultados completos dos testes estão em [01-testes-iniciais.md](../03-testes/01-testes-iniciais.md).
 
 ## Parte 4 — Particularidades da lb
 
@@ -259,7 +259,7 @@ echo 'sdadmin ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/90-lab
 
 Cria um arquivo em `/etc/sudoers.d/` que libera o `sudo` sem senha para o `sdadmin`. Foi necessário porque o netplan exige `sudo` e as senhas são digitadas só por quem é dono delas, nunca por quem executa os comandos remotamente. Este comando é o único que pediu a senha, uma vez, digitada no console da VM. Num laboratório isolado é aceitável; em produção, não.
 
-Os dois acessos (a chave e o `90-lab`) devem ser removidos no fim do trabalho, ver [vms.md](vms.md#acesso-de-laboratório).
+Os dois acessos (a chave e o `90-lab`) devem ser removidos no fim do trabalho, ver [01-vms.md](../01-especificacoes/01-vms.md#acesso-de-laboratório).
 
 ### Testes a partir da lb
 

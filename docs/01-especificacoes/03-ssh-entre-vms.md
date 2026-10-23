@@ -8,7 +8,7 @@ Permitir que a `lb` entre por SSH na `app-a`, `app-b` e `db` sem digitar senha, 
 
 ## Como funciona
 
-O SSH com chave usa um par. A chave **privada** fica só na máquina de origem (a `lb`), e a **pública** é copiada para `~/.ssh/authorized_keys` do destino. Quem prova que tem a privada entra sem senha. A chave privada nunca sai da `lb` e não vai para o repositório; a pública também não é versionada, seguindo a regra do [acesso remoto](acesso-remoto.md).
+O SSH com chave usa um par. A chave **privada** fica só na máquina de origem (a `lb`), e a **pública** é copiada para `~/.ssh/authorized_keys` do destino. Quem prova que tem a privada entra sem senha. A chave privada nunca sai da `lb` e não vai para o repositório; a pública também não é versionada, seguindo a regra do [acesso remoto](../acesso-remoto.md).
 
 ## Passos
 
@@ -63,4 +63,4 @@ O teste usou `-o BatchMode=yes`, que falha em vez de pedir senha, então o resul
 
 ## Relação com o acesso do Windows
 
-O login do Windows para as três VMs de aplicação e banco por chave também foi testado (ver [testes-iniciais.md](testes-iniciais.md)). Esta etapa acrescenta o caminho da `lb` para elas.
+O login do Windows para as três VMs de aplicação e banco por chave também foi testado (ver [01-testes-iniciais.md](../03-testes/01-testes-iniciais.md)). Esta etapa acrescenta o caminho da `lb` para elas.

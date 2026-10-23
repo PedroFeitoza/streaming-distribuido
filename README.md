@@ -140,7 +140,7 @@ A aplicação acessa o banco com um usuário dedicado (`app_streaming`), que tem
 
 ## Implantação
 
-O passo a passo da criação das VMs, as escolhas do instalador e os problemas encontrados estão em [docs/vms.md](docs/vms.md). A configuração de rede, com o netplan de cada máquina e os testes, está em [docs/rede.md](docs/rede.md). Os comandos usados em cada VM, com a explicação de cada um, estão em [docs/comandos-vms.md](docs/comandos-vms.md). Os testes iniciais e seus resultados estão em [docs/testes-iniciais.md](docs/testes-iniciais.md). O SSH com chaves da `lb` para as outras VMs (etapa 3) está em [docs/ssh-entre-vms.md](docs/ssh-entre-vms.md).
+O passo a passo da criação das VMs, as escolhas do instalador e os problemas encontrados estão em [docs/01-especificacoes/01-vms.md](docs/01-especificacoes/01-vms.md). A configuração de rede, com o netplan de cada máquina e os testes, está em [docs/01-especificacoes/02-rede.md](docs/01-especificacoes/02-rede.md). Os comandos usados em cada VM, com a explicação de cada um, estão em [docs/02-comandos/01-criacao-e-rede-das-vms.md](docs/02-comandos/01-criacao-e-rede-das-vms.md). A lista completa está em [docs/README.md](docs/README.md). Os testes iniciais e seus resultados estão em [docs/03-testes/01-testes-iniciais.md](docs/03-testes/01-testes-iniciais.md). O SSH com chaves da `lb` para as outras VMs (etapa 3) está em [docs/01-especificacoes/03-ssh-entre-vms.md](docs/01-especificacoes/03-ssh-entre-vms.md).
 
 ### 1. Rede (todas as máquinas)
 

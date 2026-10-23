@@ -1,6 +1,6 @@
 # Testes iniciais das VMs
 
-Registro dos testes que **foram executados** nas VMs até agora e dos resultados obtidos. O que ainda não foi testado está marcado como **pendente**. A criação das VMs está em [vms.md](vms.md), a rede em [rede.md](rede.md) e os comandos em [comandos-vms.md](comandos-vms.md).
+Registro dos testes que **foram executados** nas VMs até agora e dos resultados obtidos. O que ainda não foi testado está marcado como **pendente**. A criação das VMs está em [01-vms.md](../01-especificacoes/01-vms.md), a rede em [02-rede.md](../01-especificacoes/02-rede.md) e os comandos em [01-criacao-e-rede-das-vms.md](../02-comandos/01-criacao-e-rede-das-vms.md).
 
 > Situação em 23/10/2026. Todos os testes abaixo consideram as quatro VMs no ar, inclusive a `lb` (192.168.56.10). Os testes de conectividade feitos antes de a `lb` existir foram descartados e refeitos.
 
@@ -65,7 +65,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | Ping para a lb | `ping -c 3 192.168.56.10` (VM) | responde | 3 de 3, 0% de perda, cerca de 1 ms |
 | Ping cruzado | `ping` para `.10`, `.11` e `.12` (VM) | responde | responde, cerca de 1 ms |
 | Login SSH por chave | `ssh sdadmin@192.168.56.13 hostname` (Windows) | `db`, sem pedir senha | `db`, sem senha |
-| SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.13 hostname` (lb) | `db`, sem senha | `db`, sem senha (ver [ssh-entre-vms.md](ssh-entre-vms.md)) |
+| SSH por chave a partir da lb | `ssh -o BatchMode=yes sdadmin@192.168.56.13 hostname` (lb) | `db`, sem senha | `db`, sem senha (ver [03-ssh-entre-vms.md](../01-especificacoes/03-ssh-entre-vms.md)) |
 | IP após reiniciar | `sudo reboot` e `ip -br a` (VM) | continua `192.168.56.13/24` | **pendente** |
 | Tamanho de `/` | `df -h /` (VM) | cerca de 15 GB | 9,75 GB, porque o LVM ficou marcado (ver [Falhas](#falhas-e-causas)) |
 
@@ -87,7 +87,7 @@ Registro dos testes que **foram executados** nas VMs até agora e dos resultados
 | --- | --- | --- | --- |
 | Configuração de cada VM | `VBoxManage showvminfo <vm>` | memória, CPUs, NIC 1 `nat`, NIC 2 `hostonly`, disco e ISO | conforme esperado nas 4 VMs |
 | ISO íntegra | SHA256 do arquivo | igual ao publicado pela Canonical | igual |
-| DHCP da host-only | `VBoxManage list dhcpservers` | desligado, segundo a listagem do adaptador | `Enabled: Yes`, faixa `.101` a `.254` (ver [rede.md](rede.md#dhcp-ativo-na-rede-host-only)) |
+| DHCP da host-only | `VBoxManage list dhcpservers` | desligado, segundo a listagem do adaptador | `Enabled: Yes`, faixa `.101` a `.254` (ver [02-rede.md](../01-especificacoes/02-rede.md#dhcp-ativo-na-rede-host-only)) |
 
 ## Rodada completa com as quatro VMs (lb no ar)
 
@@ -125,7 +125,7 @@ O `ip -br a` e o `ip route` da `lb` ainda não foram lidos por essa verificaçã
 | Repasse de pacotes (*Forwarding*) | interface do Tailscale no Windows | habilitado | aparecia **Disabled** |
 | Colega pinga uma VM pela VPN | `ping 192.168.56.10` (colega) | responde | **pendente**: nenhum colega entrou ainda |
 
-Detalhes e comandos em [acesso-remoto.md](acesso-remoto.md), no PR #2.
+Detalhes e comandos em [acesso-remoto.md](../acesso-remoto.md), no PR #2.
 
 ## Falhas e causas
 
@@ -146,7 +146,7 @@ Detalhes e comandos em [acesso-remoto.md](acesso-remoto.md), no PR #2.
 
 ## Acesso de laboratório (remover no fim)
 
-Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorized_keys` e o arquivo `/etc/sudoers.d/90-lab` com `sudo` sem senha. São aceitáveis só em laboratório isolado e **devem ser removidos no fim do trabalho** (ver [vms.md](vms.md#acesso-de-laboratório)).
+Na `lb` foram criados uma chave SSH de laboratório (`claude-lab`) em `authorized_keys` e o arquivo `/etc/sudoers.d/90-lab` com `sudo` sem senha. São aceitáveis só em laboratório isolado e **devem ser removidos no fim do trabalho** (ver [01-vms.md](../01-especificacoes/01-vms.md#acesso-de-laboratório)).
 
 ## Pendências
 

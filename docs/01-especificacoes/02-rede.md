@@ -1,6 +1,6 @@
 # Rede das máquinas virtuais
 
-Como a rede das quatro VMs foi configurada. A criação das VMs está em [vms.md](vms.md).
+Como a rede das quatro VMs foi configurada. A criação das VMs está em [01-vms.md](01-vms.md).
 
 > Situação em 23/10/2026. Itens marcados como **pendente** ainda não foram concluídos ou testados.
 
@@ -60,7 +60,7 @@ network:
 
 YAML usa espaços (nunca Tab) para a indentação, e ela define a hierarquia.
 
-Os arquivos de cada VM ficam em [`infra/netplan/`](../infra/netplan/). Existem os das quatro VMs (`lb`, `app-a`, `app-b` e `db`). Os comandos usados para gravar e aplicar o arquivo, um a um, estão em [comandos-vms.md](comandos-vms.md#parte-3--configurar-dentro-da-vm).
+Os arquivos de cada VM ficam em [`infra/netplan/`](../../infra/netplan/). Existem os das quatro VMs (`lb`, `app-a`, `app-b` e `db`). Os comandos usados para gravar e aplicar o arquivo, um a um, estão em [01-criacao-e-rede-das-vms.md](../02-comandos/01-criacao-e-rede-das-vms.md#parte-3--configurar-dentro-da-vm).
 
 ### Aplicar
 
@@ -116,7 +116,7 @@ Para conferir que a configuração é permanente, reiniciar a VM (`sudo reboot`)
 | `ssh` por chave do Windows | ok | ok | ok |
 | `ping 192.168.56.10` (lb) | 3/3 | 3/3 | 3/3 |
 
-A `lb` alcança as três VMs (ver abaixo). Os resultados completos de todos os testes estão em [testes-iniciais.md](testes-iniciais.md); aqui ficam os da configuração de rede.
+A `lb` alcança as três VMs (ver abaixo). Os resultados completos de todos os testes estão em [01-testes-iniciais.md](../03-testes/01-testes-iniciais.md); aqui ficam os da configuração de rede.
 
 ### Resultados da `lb`
 

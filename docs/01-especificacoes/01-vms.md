@@ -1,6 +1,6 @@
 # Criação das máquinas virtuais
 
-Registro de como as quatro VMs do projeto foram criadas e instaladas. A configuração de rede (netplan, IPs fixos) está em [rede.md](rede.md), e o passo a passo com cada comando explicado está em [comandos-vms.md](comandos-vms.md).
+Registro de como as quatro VMs do projeto foram criadas e instaladas. A configuração de rede (netplan, IPs fixos) está em [02-rede.md](02-rede.md), e o passo a passo com cada comando explicado está em [01-criacao-e-rede-das-vms.md](../02-comandos/01-criacao-e-rede-das-vms.md).
 
 > Situação em 23/10/2026. Itens marcados como **pendente** ainda não foram concluídos ou testados.
 
@@ -41,7 +41,7 @@ Os discos são dinâmicos: o arquivo `.vdi` só cresce conforme o uso. No total 
 
 ## Criação com VBoxManage
 
-As VMs foram criadas pela linha de comando do VirtualBox. A explicação de cada comando e opção está em [comandos-vms.md](comandos-vms.md#parte-1--criar-a-vm-no-host-powershell-windows). Exemplo da `app-a`; nas outras muda o nome, a memória, as CPUs e o tamanho do disco conforme a tabela acima.
+As VMs foram criadas pela linha de comando do VirtualBox. A explicação de cada comando e opção está em [01-criacao-e-rede-das-vms.md](../02-comandos/01-criacao-e-rede-das-vms.md#parte-1--criar-a-vm-no-host-powershell-windows). Exemplo da `app-a`; nas outras muda o nome, a memória, as CPUs e o tamanho do disco conforme a tabela acima.
 
 ```powershell
 # 1. Cria e registra a VM (arquivo .vbox) em <PASTA_DAS_VMS>\app-a
@@ -157,7 +157,7 @@ sed -i '/claude-lab/d' ~/.ssh/authorized_keys
 
 ### Observação sobre a app-b
 
-A `app-b` apareceu com dois IPs na `enp0s8`, o fixo `192.168.56.12` e o `192.168.56.104` do DHCP, que veio antes do ajuste para `dhcp4: false`. **Resolvido:** na rodada completa de testes o `.104` não aparece mais (ver [testes-iniciais.md](testes-iniciais.md)).
+A `app-b` apareceu com dois IPs na `enp0s8`, o fixo `192.168.56.12` e o `192.168.56.104` do DHCP, que veio antes do ajuste para `dhcp4: false`. **Resolvido:** na rodada completa de testes o `.104` não aparece mais (ver [01-testes-iniciais.md](../03-testes/01-testes-iniciais.md)).
 
 ### Configuração pelo console com `keyboardputstring`
 
