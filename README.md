@@ -203,33 +203,16 @@ sudo systemctl enable --now streaming
 
 ### 4. Balanceador (VM 1)
 
-```nginx
-# /etc/nginx/sites-available/streaming
-upstream nos_streaming {
-    server 192.168.56.11:3000 max_fails=1 fail_timeout=10s;
-    server 192.168.56.12:3000 max_fails=1 fail_timeout=10s;
-}
-
-server {
-    listen 80;
-
-    location / {
-        proxy_pass http://nos_streaming;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_next_upstream error timeout http_502 http_503;
-        proxy_connect_timeout 2s;
-    }
-}
-```
+O Nginx na `lb` usa o arquivo [`infra/balanceador/streaming.conf`](infra/balanceador/streaming.conf), instalado em `/etc/nginx/conf.d/streaming.conf`. Ele declara um `upstream` com os dois nós (`192.168.56.11:3000` e `192.168.56.12:3000`, round-robin, `max_fails=2 fail_timeout=10s`) e repassa a porta 80 para ele, com `proxy_next_upstream` para repetir no outro nó uma requisição que falhou. O site `default` do Nginx foi removido para não disputar a porta 80, e o cabeçalho `X-Upstream` informa qual nó respondeu.
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/streaming /etc/nginx/sites-enabled/
-sudo rm /etc/nginx/sites-enabled/default
-sudo nginx -t && sudo systemctl reload nginx
+sudo apt-get install -y nginx
+sudo cp streaming.conf /etc/nginx/conf.d/streaming.conf
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl enable --now nginx && sudo systemctl reload nginx
 ```
 
-Com `max_fails` e `fail_timeout`, o Nginx marca como indisponível um nó que deixa de responder e o volta a usar quando ele se recupera. `proxy_next_upstream` faz uma requisição que falhou em um nó ser repetida no outro.
+Com `max_fails` e `fail_timeout`, o Nginx marca como indisponível um nó que deixa de responder e o volta a usar quando ele se recupera. `proxy_next_upstream` faz uma requisição que falhou em um nó ser repetida no outro. A explicação de cada diretiva está em [docs/01-especificacoes/04-nginx-e-upstream.md](docs/01-especificacoes/04-nginx-e-upstream.md), e o teste de balanceamento em [docs/03-testes/02-balanceamento.md](docs/03-testes/02-balanceamento.md).
 
 ## Verificação
 
