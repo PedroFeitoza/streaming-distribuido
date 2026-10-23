@@ -6,12 +6,14 @@ Passo a passo dos comandos executados para criar e configurar as VMs `app-a`, `a
 
 ## Parte 1 — Criar a VM no host (PowerShell, Windows)
 
+Troque `<PASTA_DAS_VMS>` pela pasta onde as VMs ficam e `<PASTA_DA_ISO>` pela pasta onde está a ISO do Ubuntu.
+
 Estes comandos rodam no Windows, com o `VBoxManage`, a linha de comando do VirtualBox. Cada um equivale a uma tela do assistente gráfico. O exemplo usa a `app-a`; a tabela no fim da parte mostra o que muda nas outras.
 
 ### 1.1 Criar e registrar a VM
 
 ```powershell
-VBoxManage createvm --name app-a --ostype Ubuntu_64 --register --basefolder F:\UNIP\VMs
+VBoxManage createvm --name app-a --ostype Ubuntu_64 --register --basefolder <PASTA_DAS_VMS>
 ```
 
 Cria a "ficha" da VM, um arquivo `.vbox` com toda a configuração dela, numa pasta própria.
@@ -19,7 +21,7 @@ Cria a "ficha" da VM, um arquivo `.vbox` com toda a configuração dela, numa pa
 - `--name app-a`: nome da VM no VirtualBox. É o mesmo usado depois como hostname do Ubuntu, para a máquina ter um nome só.
 - `--ostype Ubuntu_64`: diz ao VirtualBox que o sistema é Ubuntu 64 bits, para ele escolher padrões compatíveis (chipset, relógio, dispositivos).
 - `--register`: faz a VM aparecer na lista do VirtualBox. Sem isso o arquivo existiria, mas o VirtualBox não o conheceria.
-- `--basefolder F:\UNIP\VMs`: guarda a VM em `F:\UNIP\VMs\app-a`, no disco com mais espaço livre.
+- `--basefolder <PASTA_DAS_VMS>`: guarda a VM em `<PASTA_DAS_VMS>\app-a`, no disco com mais espaço livre.
 
 ### 1.2 Memória e CPUs
 
@@ -54,7 +56,7 @@ Liga a placa de rede 2 à rede privada `192.168.56.0/24`, que existe só dentro 
 ### 1.5 Disco
 
 ```powershell
-VBoxManage createmedium disk --filename F:\UNIP\VMs\app-a\app-a.vdi --size 10240 --variant Standard
+VBoxManage createmedium disk --filename <PASTA_DAS_VMS>\app-a\app-a.vdi --size 10240 --variant Standard
 ```
 
 Cria o disco virtual.
@@ -67,8 +69,8 @@ Cria o disco virtual.
 
 ```powershell
 VBoxManage storagectl app-a --name SATA --add sata --controller IntelAhci
-VBoxManage storageattach app-a --storagectl SATA --port 0 --device 0 --type hdd --medium F:\UNIP\VMs\app-a\app-a.vdi
-VBoxManage storageattach app-a --storagectl SATA --port 1 --device 0 --type dvddrive --medium F:\UNIP\iso\ubuntu-24.04.5-live-server-amd64.iso
+VBoxManage storageattach app-a --storagectl SATA --port 0 --device 0 --type hdd --medium <PASTA_DAS_VMS>\app-a\app-a.vdi
+VBoxManage storageattach app-a --storagectl SATA --port 1 --device 0 --type dvddrive --medium <PASTA_DA_ISO>\ubuntu-24.04.5-live-server-amd64.iso
 ```
 
 É como montar o hardware: instalar a placa onde se ligam os discos, plugar o HD e colocar o DVD de instalação no leitor.
@@ -91,9 +93,9 @@ Mostra a configuração da VM. Deve aparecer `Memory size: 2048MB`, `Number of C
 
 | VM | `--name` | `--memory` | `--cpus` | `--size` | Disco |
 | --- | --- | --- | --- | --- | --- |
-| app-a | `app-a` | 2048 | 2 | 10240 | `F:\UNIP\VMs\app-a\app-a.vdi` |
-| app-b | `app-b` | 2048 | 2 | 10240 | `F:\UNIP\VMs\app-b\app-b.vdi` |
-| db | `db` | 2048 | 2 | 15360 | `F:\UNIP\VMs\db\db.vdi` |
+| app-a | `app-a` | 2048 | 2 | 10240 | `<PASTA_DAS_VMS>\app-a\app-a.vdi` |
+| app-b | `app-b` | 2048 | 2 | 10240 | `<PASTA_DAS_VMS>\app-b\app-b.vdi` |
+| db | `db` | 2048 | 2 | 15360 | `<PASTA_DAS_VMS>\db\db.vdi` |
 
 ## Parte 2 — Instalar o Ubuntu Server
 

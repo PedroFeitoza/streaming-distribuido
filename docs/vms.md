@@ -23,8 +23,10 @@ Usuário administrador em todas as VMs: `sdadmin` (o mesmo nas quatro, para faci
 | --- | --- |
 | Sistema do host | Windows |
 | Hipervisor | VirtualBox 7.2 |
-| Pasta das VMs | `F:\UNIP\VMs` |
-| ISO | `F:\UNIP\iso\ubuntu-24.04.5-live-server-amd64.iso` (Ubuntu Server 24.04.5 LTS) |
+| Pasta das VMs | `<PASTA_DAS_VMS>` (qualquer pasta num disco com espaço livre) |
+| ISO | `<PASTA_DA_ISO>\ubuntu-24.04.5-live-server-amd64.iso` (Ubuntu Server 24.04.5 LTS) |
+
+Nos comandos, `<PASTA_DAS_VMS>` e `<PASTA_DA_ISO>` são marcadores: troque pelos caminhos da sua máquina.
 | Rede host-only | `VirtualBox Host-Only Ethernet Adapter`, host em `192.168.56.1` |
 
 A ISO foi baixada de `releases.ubuntu.com` e o SHA256 foi conferido com o valor publicado pela Canonical. A mesma ISO foi reutilizada nas quatro VMs.
@@ -42,8 +44,8 @@ Os discos são dinâmicos: o arquivo `.vdi` só cresce conforme o uso. No total 
 As VMs foram criadas pela linha de comando do VirtualBox. A explicação de cada comando e opção está em [comandos-vms.md](comandos-vms.md#parte-1--criar-a-vm-no-host-powershell-windows). Exemplo da `app-a`; nas outras muda o nome, a memória, as CPUs e o tamanho do disco conforme a tabela acima.
 
 ```powershell
-# 1. Cria e registra a VM (arquivo .vbox) em F:\UNIP\VMs\app-a
-VBoxManage createvm --name app-a --ostype Ubuntu_64 --register --basefolder F:\UNIP\VMs
+# 1. Cria e registra a VM (arquivo .vbox) em <PASTA_DAS_VMS>\app-a
+VBoxManage createvm --name app-a --ostype Ubuntu_64 --register --basefolder <PASTA_DAS_VMS>
 
 # 2. Memória e CPUs
 VBoxManage modifyvm app-a --memory 2048 --cpus 2
@@ -55,20 +57,20 @@ VBoxManage modifyvm app-a --nic1 nat
 VBoxManage modifyvm app-a --nic2 hostonly --hostonlyadapter2 "VirtualBox Host-Only Ethernet Adapter"
 
 # 5. Disco dinâmico de 10 GB (db: --size 15360)
-VBoxManage createmedium disk --filename F:\UNIP\VMs\app-a\app-a.vdi --size 10240 --variant Standard
+VBoxManage createmedium disk --filename <PASTA_DAS_VMS>\app-a\app-a.vdi --size 10240 --variant Standard
 
 # 6. Controlador SATA, disco e ISO
 VBoxManage storagectl app-a --name SATA --add sata --controller IntelAhci
-VBoxManage storageattach app-a --storagectl SATA --port 0 --device 0 --type hdd --medium F:\UNIP\VMs\app-a\app-a.vdi
-VBoxManage storageattach app-a --storagectl SATA --port 1 --device 0 --type dvddrive --medium F:\UNIP\iso\ubuntu-24.04.5-live-server-amd64.iso
+VBoxManage storageattach app-a --storagectl SATA --port 0 --device 0 --type hdd --medium <PASTA_DAS_VMS>\app-a\app-a.vdi
+VBoxManage storageattach app-a --storagectl SATA --port 1 --device 0 --type dvddrive --medium <PASTA_DA_ISO>\ubuntu-24.04.5-live-server-amd64.iso
 ```
 
 | VM | `--memory` | `--cpus` | `--size` (MB) | Disco |
 | --- | --- | --- | --- | --- |
-| lb | 1024 | 1 | 10240 | `F:\UNIP\VMs\lb\lb.vdi` |
-| app-a | 2048 | 2 | 10240 | `F:\UNIP\VMs\app-a\app-a.vdi` |
-| app-b | 2048 | 2 | 10240 | `F:\UNIP\VMs\app-b\app-b.vdi` |
-| db | 2048 | 2 | 15360 | `F:\UNIP\VMs\db\db.vdi` |
+| lb | 1024 | 1 | 10240 | `<PASTA_DAS_VMS>\lb\lb.vdi` |
+| app-a | 2048 | 2 | 10240 | `<PASTA_DAS_VMS>\app-a\app-a.vdi` |
+| app-b | 2048 | 2 | 10240 | `<PASTA_DAS_VMS>\app-b\app-b.vdi` |
+| db | 2048 | 2 | 15360 | `<PASTA_DAS_VMS>\db\db.vdi` |
 
 **Como conferir:** `VBoxManage showvminfo <nome>` deve mostrar a memória e as CPUs da tabela, `nic1="nat"`, `nic2="hostonly"`, o disco e a ISO no drive de DVD. Isso foi conferido nas quatro VMs.
 
