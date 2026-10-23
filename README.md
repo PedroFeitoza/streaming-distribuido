@@ -140,6 +140,8 @@ A aplicação acessa o banco com um usuário dedicado (`app_streaming`), que tem
 
 ## Implantação
 
+O passo a passo da criação das VMs, as escolhas do instalador e os problemas encontrados estão em [docs/vms.md](docs/vms.md). A configuração de rede, com o netplan de cada máquina e os testes, está em [docs/rede.md](docs/rede.md).
+
 ### 1. Rede (todas as máquinas)
 
 Exemplo de netplan para o Nó A. No VirtualBox, as interfaces costumam se chamar `enp0s3` (NAT) e `enp0s8` (host-only). Confira com `ip addr`.
