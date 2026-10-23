@@ -1,11 +1,11 @@
 # Acesso remoto do grupo às VMs
 
-As quatro VMs rodam no VirtualBox de um único computador (o anfitrião), na rede host-only `192.168.56.0/24`. Essa rede só existe dentro desse PC. Este documento mostra como os colegas do grupo acessam as VMs pela internet sem expor nada publicamente.
+As quatro VMs rodam no VirtualBox de um único computador (o anfitrião), na rede host-only `192.168.56.0/24`. Essa rede só existe dentro desse computador. Este documento mostra como os colegas do grupo acessam as VMs pela internet sem expor nada publicamente.
 
 ## Visão geral
 
 ```
- Colega (casa)                     computador anfitrião                        VMs (host-only)
+ Colega (casa)                     Anfitrião                          VMs (host-only)
 ┌─────────────┐   VPN Tailscale   ┌──────────────────────┐   ┌──────────────────────────┐
 │ ssh maria@  │ ════════════════► │ Tailscale            │──►│ lb     192.168.56.10     │
 │ 192.168.56.x│   (100.x.x.x)     │ subnet router da rota│   │ app-a  192.168.56.11     │
@@ -146,7 +146,7 @@ Host lb app-a app-b db
     IdentityFile ~/.ssh/id_ed25519
 ```
 
-No Windows o arquivo fica em `C:\Users\<voce>\.ssh\config`. Depois disso, `ssh app-a` basta.
+No Windows, o arquivo fica na pasta `.ssh` dentro da pasta do seu usuário. Depois disso, `ssh app-a` basta.
 
 ## Etapa 7 — VS Code Remote-SSH
 
