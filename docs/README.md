@@ -27,6 +27,7 @@
 | [01-testes-iniciais.md](03-testes/01-testes-iniciais.md) | Testes das quatro VMs: rede, conectividade, SSH por chave, falhas encontradas e pendências |
 | [02-balanceamento.md](03-testes/02-balanceamento.md) | Teste de balanceamento round-robin pela `lb` |
 | [03-teste-de-queda.md](03-testes/03-teste-de-queda.md) | Teste de queda de um nó, **simulado** na `lb` com `iptables` (a queda real segue pendente) |
+| [04-teste-da-db.md](03-testes/04-teste-da-db.md) | Instalação e configuração do PostgreSQL na `db`, criação das tabelas e teste de conexão como `app_streaming` a partir de `app-a` e `app-b` |
 
 ### Fora das pastas numeradas
 

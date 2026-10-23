@@ -8,7 +8,7 @@ Esquema do banco `streaming` na `db` (192.168.56.13:5432). Os scripts ficam em [
 | [`02-dados-exemplo.sql`](../../banco/02-dados-exemplo.sql) | Carrega duas categorias e três vídeos |
 | [`03-permissoes.sql`](../../banco/03-permissoes.sql) | Dá ao usuário `app_streaming` só o que a aplicação usa |
 
-> Pendente: a `db` ainda não tem o PostgreSQL configurado para a rede nem o banco `streaming` e o usuário `app_streaming`. Os scripts foram escritos, mas ainda não foram executados.
+> Os scripts foram executados na `db` em 2026-10-23, depois de instalar e configurar o PostgreSQL. O resultado dos testes está em [04-teste-da-db.md](../03-testes/04-teste-da-db.md).
 
 ## Por que o banco é o centro do sistema
 
@@ -88,7 +88,7 @@ Isso não muda nada no balanceamento: a página de detalhe continua sendo gerada
 | Sintel | Animação | 888 s (14:48) | `eRsGyueVLvQ` |
 | Tears of Steel | Ficção científica | 734 s (12:14) | `R6MlUcmOul8` |
 
-São filmes abertos da Blender Foundation. A confirmar: abrir `https://www.youtube.com/watch?v=<ID>` de cada um no navegador e conferir se o vídeo existe e se a duração bate. A tabela `reproducoes` começa vazia, porque quem grava nela é a aplicação.
+São filmes abertos da Blender Foundation. Ainda a confirmar: abrir `https://www.youtube.com/watch?v=<ID>` de cada um no navegador e conferir se o vídeo existe e se a duração bate. A tabela `reproducoes` começa vazia, porque quem grava nela é a aplicação.
 
 ## Permissões do usuário da aplicação
 
