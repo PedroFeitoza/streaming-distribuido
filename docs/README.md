@@ -11,6 +11,7 @@
 | [01-vms.md](01-especificacoes/01-vms.md) | Tabela das quatro VMs, recursos, comandos `VBoxManage`, escolhas do instalador, problemas encontrados e pendências |
 | [02-rede.md](01-especificacoes/02-rede.md) | Adaptadores NAT e host-only, DHCP da host-only, netplan explicado, cloud-init |
 | [03-ssh-entre-vms.md](01-especificacoes/03-ssh-entre-vms.md) | Etapa 3: SSH com chaves da `lb` para as outras VMs |
+| [04-nginx-e-upstream.md](01-especificacoes/04-nginx-e-upstream.md) | Etapa 4: Nginx na `lb` com upstream para `app-a` e `app-b` |
 
 ### 02-comandos: o que foi digitado, com explicação
 
@@ -23,6 +24,8 @@
 | Arquivo | Conteúdo |
 | --- | --- |
 | [01-testes-iniciais.md](03-testes/01-testes-iniciais.md) | Testes das quatro VMs: rede, conectividade, SSH por chave, falhas encontradas e pendências |
+| [02-balanceamento.md](03-testes/02-balanceamento.md) | Teste de balanceamento round-robin pela `lb` |
+| [03-teste-de-queda.md](03-testes/03-teste-de-queda.md) | Plano do teste de queda de um nó (**pendente**) |
 
 ### Fora das pastas numeradas
 

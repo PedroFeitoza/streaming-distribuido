@@ -8,7 +8,7 @@ Registro de como as quatro VMs do projeto foram criadas e instaladas. A configur
 
 | VM | Nome / hostname | Papel | IP host-only | RAM | CPUs | Disco | Situação |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| VM 1 | `lb` | Balanceador Nginx | 192.168.56.10 | 1 GB | 1 | 10 GB | Instalada, IP fixo aplicado e testado; Nginx **pendente** |
+| VM 1 | `lb` | Balanceador Nginx | 192.168.56.10 | 1 GB | 1 | 10 GB | Instalada, IP fixo e Nginx configurados e testados |
 | VM 2 | `app-a` | Nó A da aplicação | 192.168.56.11 | 2 GB | 2 | 10 GB | Instalada, IP fixo aplicado e testado |
 | VM 3 | `app-b` | Nó B da aplicação | 192.168.56.12 | 2 GB | 2 | 10 GB | Instalada, IP fixo aplicado e testado |
 | VM 4 | `db` | Banco PostgreSQL | 192.168.56.13 | 2 GB | 2 | 15 GB | Instalada, IP fixo aplicado e testado |
@@ -170,7 +170,6 @@ Parte da configuração foi feita digitando no console das VMs a partir do host,
 ## Pendências
 
 - [ ] `lb`: atualizar o sistema (`sudo apt update && sudo apt upgrade`), porque a instalação foi interrompida na fase de atualizações.
-- [ ] `lb`: instalar o Nginx e configurar o upstream para `192.168.56.11:3000` e `192.168.56.12:3000`.
 - [ ] Remover o acesso de laboratório ao fim do trabalho (ver [Acesso de laboratório](#acesso-de-laboratório)).
 - [ ] `db`: confirmar o login `ssh sdadmin@192.168.56.13` a partir do Windows (ping e porta 22 já respondem).
 - [ ] `db`: decidir se expande o LVM para os 15 GB.
