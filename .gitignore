@@ -1,0 +1,24 @@
+# Variáveis de ambiente com credenciais (versionar apenas os exemplos)
+.env
+*.env
+!*.env.example
+
+# Dependências do Node.js
+node_modules/
+
+# Discos e imagens das máquinas virtuais
+*.vdi
+*.vmdk
+*.ova
+*.iso
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Arquivos do sistema operacional e de editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
