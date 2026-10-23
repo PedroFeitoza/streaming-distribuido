@@ -263,6 +263,8 @@ Os dois acessos (a chave e o `90-lab`) devem ser removidos no fim do trabalho, v
 
 ### Testes a partir da lb
 
+> O relato da `lb` informa que foram testados ping e porta 22, mas não registra o comando exato; o `nc` abaixo é a forma usual de testar a porta.
+
 ```bash
 ping -c 3 192.168.56.11   # repetir para .12 e .13
 nc -zv 192.168.56.11 22   # porta 22 aberta?
