@@ -50,6 +50,6 @@ A primeira tentativa a partir da `app-a` deu `password authentication failed for
 
 - ~~Colocar a senha do `app_streaming` em `/etc/streaming.env` nos dois nós~~: feito, ver [05-implantacao-da-app.md](05-implantacao-da-app.md).
 - Os comandos com `sudo` foram digitados por Pedro, por SSH com `ssh -t`, informando a senha do `sdadmin`; **nenhum sudo sem senha foi criado** na `db`, na `app-a` nem na `app-b`.
-- Confirmar no YouTube os IDs e as durações dos três vídeos.
+- Confirmar no navegador os IDs de Big Buck Bunny e Tears of Steel e a duração de Big Buck Bunny (Sintel já foi confirmado); ver [05-banco-de-dados.md](../01-especificacoes/05-banco-de-dados.md#dados-de-exemplo).
 - Decidir sobre a expansão do LVM da `db` (continua com 9,75 GB).
 - Guardar uma cópia dos arquivos `postgresql.conf` e `pg_hba.conf` ajustados em [`infra/banco/`](../../infra/banco/).
