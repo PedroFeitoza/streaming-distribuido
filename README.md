@@ -130,6 +130,8 @@ GROUP BY no_responsavel;
 
 A aplicação acessa o banco com um usuário dedicado (`app_streaming`), que tem apenas as permissões necessárias, em vez do usuário administrador.
 
+Os tipos de cada coluna, os scripts SQL de criação e os dados de exemplo estão em [docs/01-especificacoes/05-banco-de-dados.md](docs/01-especificacoes/05-banco-de-dados.md). A coluna `videos.arquivo` guarda o ID do vídeo no YouTube.
+
 ## Funcionalidades
 
 - **Catálogo** com título, categoria e duração de cada vídeo.

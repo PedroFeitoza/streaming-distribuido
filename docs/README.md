@@ -12,6 +12,7 @@
 | [02-rede.md](01-especificacoes/02-rede.md) | Adaptadores NAT e host-only, DHCP da host-only, netplan explicado, cloud-init |
 | [03-ssh-entre-vms.md](01-especificacoes/03-ssh-entre-vms.md) | Etapa 3: SSH com chaves da `lb` para as outras VMs |
 | [04-nginx-e-upstream.md](01-especificacoes/04-nginx-e-upstream.md) | Etapa 4: Nginx na `lb` com upstream para `app-a` e `app-b` |
+| [05-banco-de-dados.md](01-especificacoes/05-banco-de-dados.md) | Banco `streaming`: as três tabelas, SQL de criação, dados de exemplo, campo `arquivo` com vídeo do YouTube e permissões |
 
 ### 02-comandos: o que foi digitado, com explicação
 
@@ -26,12 +27,14 @@
 | [01-testes-iniciais.md](03-testes/01-testes-iniciais.md) | Testes das quatro VMs: rede, conectividade, SSH por chave, falhas encontradas e pendências |
 | [02-balanceamento.md](03-testes/02-balanceamento.md) | Teste de balanceamento round-robin pela `lb` |
 | [03-teste-de-queda.md](03-testes/03-teste-de-queda.md) | Teste de queda de um nó, **simulado** na `lb` com `iptables` (a queda real segue pendente) |
+| [04-teste-da-db.md](03-testes/04-teste-da-db.md) | Instalação e configuração do PostgreSQL na `db`, criação das tabelas e teste de conexão como `app_streaming` a partir de `app-a` e `app-b` |
+| [05-implantacao-da-app.md](03-testes/05-implantacao-da-app.md) | Implantação da aplicação base (Express e `/teste-banco`) em `app-a` e `app-b`, e teste de balanceamento com o banco |
 
 ### Fora das pastas numeradas
 
 - `acesso-remoto.md`: acesso do grupo às VMs pela VPN (entra com o PR #2; depois do merge, pode ser movido para uma pasta `04-acesso-remoto/`).
 
-Os arquivos de configuração das máquinas ficam em [`infra/`](../infra/), e os scripts em [`scripts/`](../scripts/).
+Os arquivos de configuração das máquinas ficam em [`infra/`](../infra/), os scripts SQL em [`banco/`](../banco/) e os scripts em [`scripts/`](../scripts/).
 
 ## Padrão para novos documentos
 
