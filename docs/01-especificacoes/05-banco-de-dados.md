@@ -88,15 +88,7 @@ Isso não muda nada no balanceamento: a página de detalhe continua sendo gerada
 | Sintel | Animação | 888 s (14:48) | `eRsGyueVLvQ` |
 | Tears of Steel | Ficção científica | 734 s (12:14) | `R6MlUcmOul8` |
 
-São filmes abertos da Blender Foundation. A conferência de IDs e durações, feita em 2026-10-26 por consulta à Wikipédia (a máquina que fez a consulta não abre o YouTube), ficou assim:
-
-| Título | Duração | ID no YouTube |
-| --- | --- | --- |
-| Big Buck Bunny | **a confirmar**: a Wikipédia diz "10 minutos" e o banco tem 634 s (10:34) | **a confirmar** |
-| Sintel | confirmada: 14 min 48 s = 888 s | confirmado: a Wikipédia aponta `eRsGyueVLvQ` como o filme completo |
-| Tears of Steel | confirmada: 12 min 14 s = 734 s | **a confirmar** |
-
-Falta abrir no navegador `https://www.youtube.com/watch?v=<ID>` de Big Buck Bunny e de Tears of Steel e conferir se o vídeo é o filme certo e a duração mostrada no player. Se algum ID estiver errado, corrija com `UPDATE videos SET arquivo = '<ID certo>' WHERE id = <id>;` (e, se a duração for diferente, `duracao_segundos` no mesmo comando) e acerte o `02-dados-exemplo.sql`. A tabela `reproducoes` começa vazia, porque quem grava nela é a aplicação.
+São filmes abertos da Blender Foundation. Os IDs e as durações foram conferidos em 2026-10-26: Sintel pela Wikipédia (14 min 48 s e o ID `eRsGyueVLvQ`) e os três no navegador, por quem montou o projeto, que confirmou que os vídeos abrem e que os dados da tabela estão certos. Se um ID mudar no futuro, corrija com `UPDATE videos SET arquivo = '<ID certo>' WHERE id = <id>;` e acerte o `02-dados-exemplo.sql`. A tabela `reproducoes` começa vazia, porque quem grava nela é a aplicação.
 
 ## Permissões do usuário da aplicação
 
