@@ -1,0 +1,24 @@
+<%- include('partes/topo') %>
+
+<p><a href="/">&larr; Voltar ao catálogo</a></p>
+
+<h1><%= video.titulo %></h1>
+<p><%= video.categoria %> · <%= formatarDuracao(video.duracao_segundos) %></p>
+
+<%# arquivo e um ID do YouTube (iframe de embed) ou um .mp4/.webm local (tag video). %>
+<% if (arquivoLocal) { %>
+  <video class="player" controls src="/videos/<%= encodeURIComponent(video.arquivo) %>"></video>
+<% } else { %>
+  <iframe class="player" src="https://www.youtube.com/embed/<%= encodeURIComponent(video.arquivo) %>"
+          title="<%= video.titulo %>" referrerpolicy="strict-origin-when-cross-origin"
+          allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+<% } %>
+
+<p><%= video.descricao %></p>
+
+<p class="aviso" style="border-color: <%= corDoNo(no.nome) %>">
+  Reprodução nº <strong><%= reproducaoId %></strong> registrada no banco pelo nó
+  <strong><%= no.nome %></strong>.
+</p>
+
+<%- include('partes/rodape') %>

@@ -1,0 +1,29 @@
+<%- include('partes/topo') %>
+
+<h1>Catálogo</h1>
+
+<div class="filtros">
+  <a href="/" class="<%= categoriaId ? '' : 'ativo' %>">Todas</a>
+  <% for (const categoria of categorias) { %>
+    <a href="/?categoria=<%= categoria.id %>"
+       class="<%= categoria.id === categoriaId ? 'ativo' : '' %>"><%= categoria.nome %></a>
+  <% } %>
+</div>
+
+<% if (videos.length === 0) { %>
+  <p>Nenhum vídeo nesta categoria.</p>
+<% } else { %>
+  <table>
+    <tr><th>Título</th><th>Categoria</th><th>Duração</th></tr>
+    <% for (const video of videos) { %>
+      <tr>
+        <td><a href="/videos/<%= video.id %>"><%= video.titulo %></a></td>
+        <td><%= video.categoria %></td>
+        <td><%= formatarDuracao(video.duracao_segundos) %></td>
+      </tr>
+    <% } %>
+  </table>
+  <p><%= videos.length %> vídeo(s).</p>
+<% } %>
+
+<%- include('partes/rodape') %>

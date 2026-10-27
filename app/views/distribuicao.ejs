@@ -1,0 +1,43 @@
+<%- include('partes/topo') %>
+
+<h1>Distribuição por nó</h1>
+
+<p>
+  Esta página foi montada pelo nó <strong><%= no.nome %></strong>, mas os números vêm
+  do banco compartilhado. Por isso os dois nós mostram a mesma contagem.
+</p>
+
+<% if (total === 0) { %>
+  <p>Nenhuma reprodução registrada ainda. Abra um vídeo no catálogo.</p>
+<% } else { %>
+  <table>
+    <tr><th>Nó</th><th>Reproduções</th><th style="width: 50%">Parcela</th></tr>
+    <% for (const linha of porNo) { %>
+      <% const pct = Math.round(linha.total * 100 / total); %>
+      <tr>
+        <td><%= linha.no_responsavel %></td>
+        <td><%= linha.total %></td>
+        <td>
+          <div class="barra-pct"
+               style="width: <%= Math.max(pct, 8) %>%; background: <%= corDoNo(linha.no_responsavel) %>"><%= pct %>%</div>
+        </td>
+      </tr>
+    <% } %>
+    <tr><th>Total</th><th><%= total %></th><th></th></tr>
+  </table>
+
+  <h2>Últimas 10 reproduções</h2>
+  <table>
+    <tr><th>Nº</th><th>Quando</th><th>Vídeo</th><th>Nó</th></tr>
+    <% for (const r of ultimas) { %>
+      <tr>
+        <td><%= r.id %></td>
+        <td><%= r.quando %></td>
+        <td><%= r.titulo %></td>
+        <td><span class="etiqueta" style="background: <%= corDoNo(r.no_responsavel) %>"><%= r.no_responsavel %></span></td>
+      </tr>
+    <% } %>
+  </table>
+<% } %>
+
+<%- include('partes/rodape') %>

@@ -134,11 +134,13 @@ Os tipos de cada coluna, os scripts SQL de criação e os dados de exemplo estã
 
 ## Funcionalidades
 
-- **Catálogo** com título, categoria e duração de cada vídeo.
-- **Página de detalhe** com reprodução pela tag `<video>` do HTML.
+- **Catálogo** (`/`) com título, categoria e duração de cada vídeo, e filtro por categoria (`/?categoria=<id>`).
+- **Página de detalhe** (`/videos/<id>`) com o player do YouTube (`<iframe>`) ou, se `arquivo` for um `.mp4`/`.webm` em `public/videos`, a tag `<video>` do HTML.
 - **Registro de reproduções**: cada abertura de vídeo grava uma linha em `reproducoes` com o nó responsável.
-- **Indicador de nó**: barra colorida no topo de todas as páginas mostrando qual instância respondeu.
-- **Painel de distribuição**: página com a contagem de reproduções por nó.
+- **Indicador de nó**: barra colorida no topo de todas as páginas mostrando qual instância respondeu (azul `NO_A`, laranja `NO_B`).
+- **Painel de distribuição** (`/distribuicao`): página com a contagem de reproduções por nó e as últimas reproduções.
+
+Rotas, decisões e testes da aplicação: [docs/01-especificacoes/06-aplicacao.md](docs/01-especificacoes/06-aplicacao.md).
 
 ## Implantação
 
@@ -203,6 +205,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now streaming
 ```
 
+Para atualizar o código nos dois nós, um de cada vez e sem tirar o site do ar, use [`scripts/implantar-app.ps1`](scripts/implantar-app.ps1) (passo a passo em [docs/01-especificacoes/06-aplicacao.md](docs/01-especificacoes/06-aplicacao.md#como-implantar-nos-nós)).
+
+Para testar a aplicação no PC, sem as VMs e sem instalar o PostgreSQL, rode `npm install` em `app/` e em `scripts/local/`, depois `npm start` em `scripts/local/`, e abra `http://localhost:8080`. Detalhes em [docs/01-especificacoes/06-aplicacao.md](docs/01-especificacoes/06-aplicacao.md#como-testar-no-pc-sem-as-vms).
+
 ### 4. Balanceador (VM 1)
 
 O Nginx na `lb` usa o arquivo [`infra/balanceador/streaming.conf`](infra/balanceador/streaming.conf), instalado em `/etc/nginx/conf.d/streaming.conf`. Ele declara um `upstream` com os dois nós (`192.168.56.11:3000` e `192.168.56.12:3000`, round-robin, `max_fails=2 fail_timeout=10s`) e repassa a porta 80 para ele, com `proxy_next_upstream` para repetir no outro nó uma requisição que falhou. O site `default` do Nginx foi removido para não disputar a porta 80, e o cabeçalho `X-Upstream` informa qual nó respondeu.
@@ -217,6 +223,15 @@ sudo nginx -t && sudo systemctl enable --now nginx && sudo systemctl reload ngin
 Com `max_fails` e `fail_timeout`, o Nginx marca como indisponível um nó que deixa de responder e o volta a usar quando ele se recupera. `proxy_next_upstream` faz uma requisição que falhou em um nó ser repetida no outro. A explicação de cada diretiva está em [docs/01-especificacoes/04-nginx-e-upstream.md](docs/01-especificacoes/04-nginx-e-upstream.md), e o teste de balanceamento em [docs/03-testes/02-balanceamento.md](docs/03-testes/02-balanceamento.md).
 
 ## Verificação
+
+O verificador automático confere pela `lb` o balanceamento, a barra do nó e os requisitos RF01 a RF06 (Node 18+, sem `npm install`). Com `--queda 60`, acompanha a queda de um nó segundo a segundo:
+
+```bash
+node testes/verificar-app.mjs http://192.168.56.10
+node testes/verificar-app.mjs http://192.168.56.10 --queda 60
+```
+
+A verificação feita antes da implantação está em [docs/03-testes/07-verificacao-da-entrega.md](docs/03-testes/07-verificacao-da-entrega.md).
 
 ### Balanceamento
 
@@ -248,8 +263,9 @@ Também é medido o comportamento durante uma falha: com o sistema sob carga, um
 ```
 streaming-distribuido/
 ├── app/                 # Aplicação Node.js + Express (copiada para /opt/streaming nos nós)
-│   ├── src/             # Código-fonte: rotas, acesso ao banco, páginas
-│   └── public/videos/   # Arquivos de vídeo servidos pela aplicação
+│   ├── server.js        # Configuração, acesso ao banco e rotas
+│   ├── views/           # Páginas em EJS (a barra do nó fica em views/partes/topo.ejs)
+│   └── public/videos/   # Arquivos de vídeo locais (opcional; o catálogo usa o YouTube)
 ├── banco/               # Scripts SQL: esquema, carga do catálogo e massa de teste
 ├── infra/               # Arquivos de configuração das máquinas
 │   ├── balanceador/     # VM 1: site do Nginx com o upstream dos dois nós
