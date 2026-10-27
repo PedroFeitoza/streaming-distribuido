@@ -2,7 +2,7 @@
 
 Seção 8.1 do guia: Apache Bench com um nó e com dois nós, divisão das reproduções por nó no banco e queda de um nó sob carga. Feito em 27/10/2026, nas quatro VMs, com a aplicação completa ([../01-especificacoes/06-aplicacao.md](../01-especificacoes/06-aplicacao.md)) implantada em `app-a` (`NO_A`) e `app-b` (`NO_B`) e o banco com 9 vídeos e a tabela `reproducoes` zerada.
 
-> **Situação:** passos 1 a 3 concluídos. Divisão no banco, queda real de um nó e religamento **pendentes** (preenchidos à medida que forem executados).
+> **Situação:** testes de carga e divisão no banco concluídos. Queda real de um nó e religamento **pendentes** (preenchidos à medida que forem executados).
 
 ## Como o teste foi feito
 
@@ -150,7 +150,23 @@ Conferência: com 50 requisições abertas ao mesmo tempo, cada uma espera cerca
 - **Média e p95 contam histórias diferentes.** A mediana caiu quase pela metade (309 → 161 ms), mas o p95 caiu só 10% (377 → 340 ms), e o desvio padrão subiu (71 → 98 ms). Com dois nós a maioria das requisições ficou bem mais rápida, mas os 5% mais lentos continuam perto de 340 ms. Olhando só a média, isso não apareceria.
 - **No teste de 1 nó, a média (287 ms) ficou abaixo da mediana (309 ms)** porque as primeiras requisições, com o servidor ainda vazio, saíram rápido (a mais rápida em 34 ms) e puxaram a média para baixo.
 
-## Divisão das reproduções por nó (pendente)
+## Divisão das reproduções por nó
+
+Na `db`, depois dos dois testes de carga:
+
+```bash
+sudo -u postgres psql -d streaming -c "SELECT no_responsavel, COUNT(*) FROM reproducoes GROUP BY no_responsavel ORDER BY no_responsavel;"
+```
+
+```
+ no_responsavel | count
+----------------+-------
+ NO_A           |  1502
+ NO_B           |   503
+(2 rows)
+```
+
+O total, 2.005, fecha com o que foi feito: 1 `curl` de conferência, 1.000 do teste com 1 nó, 4 `curl` de conferência e 1.000 do teste com 2 nós. As 1.000 do teste com 1 nó são todas do `NO_A`; descontadas elas, sobram cerca de 502 para o `NO_A` e 503 para o `NO_B` (o `curl` de conferência pode ter caído em qualquer um), uma divisão praticamente 50/50. Isso mostra no banco, e não só no cabeçalho `X-Upstream`, que o round-robin dividiu o trabalho entre os nós.
 
 ## Queda real de um nó sob carga (pendente)
 
