@@ -27,11 +27,12 @@
 | --- | --- |
 | [01-testes-iniciais.md](03-testes/01-testes-iniciais.md) | Testes das quatro VMs: rede, conectividade, SSH por chave, falhas encontradas e pendências |
 | [02-balanceamento.md](03-testes/02-balanceamento.md) | Teste de balanceamento round-robin pela `lb` |
-| [03-teste-de-queda.md](03-testes/03-teste-de-queda.md) | Teste de queda de um nó, **simulado** na `lb` com `iptables` (a queda real segue pendente) |
+| [03-teste-de-queda.md](03-testes/03-teste-de-queda.md) | Teste de queda de um nó, **simulado** na `lb` com `iptables` (a queda real está no 08) |
 | [04-teste-da-db.md](03-testes/04-teste-da-db.md) | Instalação e configuração do PostgreSQL na `db`, criação das tabelas e teste de conexão como `app_streaming` a partir de `app-a` e `app-b` |
 | [05-implantacao-da-app.md](03-testes/05-implantacao-da-app.md) | Implantação da aplicação base (Express e `/teste-banco`) em `app-a` e `app-b`, e teste de balanceamento com o banco |
 | [06-teste-local-da-app.md](03-testes/06-teste-local-da-app.md) | Teste da aplicação completa num PC, sem as VMs: páginas, gravação das reproduções, carga e o defeito dos nós caindo junto com o banco |
 | [07-verificacao-da-entrega.md](03-testes/07-verificacao-da-entrega.md) | Verificação item a item contra os requisitos e o guia, queda de nó, entradas maliciosas, carga indicativa e o script de implantação testado num nó simulado |
+| [08-testes-de-carga-e-falha.md](03-testes/08-testes-de-carga-e-falha.md) | Frente de testes nas VMs: Apache Bench com 1 nó contra 2 nós, divisão das reproduções por nó, queda real de um nó sob carga e religamento; planilha em [08-planilha-1-no-x-2-nos.csv](03-testes/08-planilha-1-no-x-2-nos.csv) |
 
 ### Fora das pastas numeradas
 
