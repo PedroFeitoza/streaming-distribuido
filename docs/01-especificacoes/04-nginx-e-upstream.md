@@ -56,5 +56,5 @@ ss -ltn | grep ":80 "              # escutando na porta 80
 Testes de balanceamento: [../03-testes/02-balanceamento.md](../03-testes/02-balanceamento.md).
 
 ## Pendente
-- Teste de queda de um nó (etapa 7): [../03-testes/03-teste-de-queda.md](../03-testes/03-teste-de-queda.md). Foi feito de forma simulada na `lb`; a queda real, parando o serviço em um nó, continua pendente.
+- Teste de queda de um nó (etapa 7): [../03-testes/03-teste-de-queda.md](../03-testes/03-teste-de-queda.md). Foi feito de forma simulada na `lb`; a queda real, parando o serviço em um nó sob carga, está em [../03-testes/08-testes-de-carga-e-falha.md](../03-testes/08-testes-de-carga-e-falha.md).
 - Depende de a aplicação responder na porta 3000 dos dois nós e do serviço systemd (etapas 5 e 6).

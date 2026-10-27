@@ -1,6 +1,6 @@
 # Teste de queda de um nó
 
-> **Teste simulado na `lb`.** A queda foi simulada com regras de `iptables` na `lb`, e não parando o serviço nos nós. A **queda real** (`sudo systemctl stop streaming` em um nó) continua **pendente**.
+> **Teste simulado na `lb`.** A queda foi simulada com regras de `iptables` na `lb`, e não parando o serviço nos nós. A **queda real** (`sudo systemctl stop streaming` em um nó, sob carga) foi feita em 27/10/2026: [08-testes-de-carga-e-falha.md](08-testes-de-carga-e-falha.md#queda-real-de-um-nó-sob-carga).
 
 Configuração testada: [../01-especificacoes/04-nginx-e-upstream.md](../01-especificacoes/04-nginx-e-upstream.md). Testado em 23/10/2026, com a aplicação mínima de teste nos nós (responde `NO_A` e `NO_B`).
 
@@ -35,6 +35,6 @@ O log do Nginx registra `connect() failed (111: Connection refused) while connec
 - Ao fim, `iptables -S OUTPUT` mostra só `-P OUTPUT ACCEPT`, ou seja, as regras de teste foram removidas.
 
 ## Limitações e pendências
-- A queda real do serviço (`sudo systemctl stop streaming` no nó, depois `sudo systemctl start streaming`) **ainda não foi feita**, porque exige a senha do `sudo` no nó. Na prática o resultado deve ser o do cenário "conexão recusada".
+- A queda real do serviço foi feita depois, sob carga: [08-testes-de-carga-e-falha.md](08-testes-de-carga-e-falha.md#queda-real-de-um-nó-sob-carga).
 - Não foi testada a queda dos **dois** nós ao mesmo tempo (esperado: HTTP 502 da `lb`).
 - A queda do processo com `kill` (o `Restart=always` do systemd o reergue) não foi medida.
