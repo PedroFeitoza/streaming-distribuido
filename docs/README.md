@@ -32,6 +32,7 @@
 | [05-implantacao-da-app.md](03-testes/05-implantacao-da-app.md) | Implantação da aplicação base (Express e `/teste-banco`) em `app-a` e `app-b`, e teste de balanceamento com o banco |
 | [06-teste-local-da-app.md](03-testes/06-teste-local-da-app.md) | Teste da aplicação completa num PC, sem as VMs: páginas, gravação das reproduções, carga e o defeito dos nós caindo junto com o banco |
 | [07-verificacao-da-entrega.md](03-testes/07-verificacao-da-entrega.md) | Verificação item a item contra os requisitos e o guia, queda de nó, entradas maliciosas, carga indicativa e o script de implantação testado num nó simulado |
+| [08-implantacao-da-app-completa.md](03-testes/08-implantacao-da-app-completa.md) | Implantação da aplicação completa em `app-a` e `app-b` e verificação pela `lb` (15 de 16; falta chegar a 8 vídeos) |
 
 ### Fora das pastas numeradas
 
