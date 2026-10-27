@@ -43,6 +43,8 @@ Antes do teste com 2 nós, o `X-Upstream` alternou `.12`, `.11`, `.12`, `.11`.
 
 ## Resultados: 1 nó contra 2 nós
 
+Planilha (abre no Excel ou no Google Planilhas, separada por `;`): [08-planilha-1-no-x-2-nos.csv](08-planilha-1-no-x-2-nos.csv).
+
 | Métrica | Campo do `ab` | 1 nó (só `NO_A`) | 2 nós | Diferença |
 | --- | --- | --- | --- | --- |
 | Requisições completas | Complete requests | 1000 | 1000 | — |

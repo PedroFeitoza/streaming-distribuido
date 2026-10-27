@@ -1,0 +1,18 @@
+Métrica;Campo do ab;1 nó (só NO_A);2 nós;Diferença;Queda do NO_A sob carga
+Comando;;ab -n 1000 -c 50 -l;ab -n 1000 -c 50 -l;;ab -n 6000 -c 50 -l
+Requisições completas;Complete requests;1000;1000;;6000
+Requisições com erro;Failed requests + Non-2xx;0;0;;0
+Taxa de erro (%);;0;0;igual;0
+Tempo total (s);Time taken for tests;5,851;3,386;-42%;23,142
+Requisições por segundo;Requests per second;170,92;295,30;+73%;259,27
+Tempo médio (ms);Total mean;287;164;-43%;192
+Desvio padrão (ms);Total +/-sd;71,2;97,7;+37%;93,9
+Mediana p50 (ms);50%;309;161;-48%;176
+p90 (ms);90%;349;310;-11%;315
+Percentil 95 (ms);95%;377;340;-10%;338
+p99 (ms);99%;399;352;-12%;366
+Mais lenta (ms);100%;406;357;-12%;389
+Taxa de transferência (KB/s);Transfer rate;482,70;834,27;+73%;732,52
+Reproduções gravadas por nó;tabela reproducoes;NO_A 1000;≈NO_A 502 / NO_B 503;≈50/50;NO_A 2067 / NO_B 3933
+Tempo para o Nginx perceber a queda;error.log;;;;< 1 s (todos os 30 erros às 23:04:37)
+Requisições que falharam no nó morto e foram repetidas no outro;error.log;;;;30 (29 reset + 1 refused)
