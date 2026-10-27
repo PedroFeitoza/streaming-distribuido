@@ -7,6 +7,7 @@ Esquema do banco `streaming` na `db` (192.168.56.13:5432). Os scripts ficam em [
 | [`01-esquema.sql`](../../banco/01-esquema.sql) | Apaga e recria as três tabelas |
 | [`02-dados-exemplo.sql`](../../banco/02-dados-exemplo.sql) | Carrega duas categorias e três vídeos |
 | [`03-permissoes.sql`](../../banco/03-permissoes.sql) | Dá ao usuário `app_streaming` só o que a aplicação usa |
+| [`04-mais-videos.sql`](../../banco/04-mais-videos.sql) | Acrescenta mais seis vídeos, chegando a 9 (aplicado em 2026-10-27) |
 
 > Os scripts foram executados na `db` em 2026-10-23, depois de instalar e configurar o PostgreSQL. O resultado dos testes está em [04-teste-da-db.md](../03-testes/04-teste-da-db.md).
 
@@ -89,6 +90,21 @@ Isso não muda nada no balanceamento: a página de detalhe continua sendo gerada
 | Tears of Steel | Ficção científica | 734 s (12:14) | `R6MlUcmOul8` |
 
 São filmes abertos da Blender Foundation. Os IDs e as durações foram conferidos em 2026-10-26: Sintel pela Wikipédia (14 min 48 s e o ID `eRsGyueVLvQ`) e os três no navegador, por quem montou o projeto, que confirmou que os vídeos abrem e que os dados da tabela estão certos. Se um ID mudar no futuro, corrija com `UPDATE videos SET arquivo = '<ID certo>' WHERE id = <id>;` e acerte o `02-dados-exemplo.sql`. A tabela `reproducoes` começa vazia, porque quem grava nela é a aplicação.
+
+### Catálogo ampliado para 9 vídeos
+
+O guia pede pelo menos 8 vídeos no catálogo. Em 2026-10-27 o [`04-mais-videos.sql`](../../banco/04-mais-videos.sql) acrescentou mais seis filmes abertos da Blender. Os IDs e as durações foram conferidos no YouTube no mesmo dia: título pelo oEmbed e duração lida da página do vídeo, todos públicos e liberados para incorporar.
+
+| Título | Categoria | Duração | `arquivo` |
+| --- | --- | --- | --- |
+| Elephants Dream | Ficção científica | 654 s (10:54) | `TLkA0RELQ1g` |
+| Cosmos Laundromat | Ficção científica | 731 s (12:11) | `Y-rmzh0PI3c` |
+| Spring | Animação | 464 s (7:44) | `WhWc3b3KhnY` |
+| Sprite Fright | Animação | 630 s (10:30) | `_cMxraX_5RE` |
+| Coffee Run | Animação | 185 s (3:05) | `PVGeM40dABA` |
+| Agent 327: Operation Barbershop | Animação | 232 s (3:52) | `mN0zPOpADL4` |
+
+Para montar um banco do zero, rode os scripts em ordem: `01`, `02`, `04` e `03`. O `03-permissoes.sql` pode vir antes ou depois, desde que as tabelas já existam.
 
 ## Permissões do usuário da aplicação
 
