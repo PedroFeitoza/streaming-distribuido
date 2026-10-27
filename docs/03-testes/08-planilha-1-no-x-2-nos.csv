@@ -1,4 +1,4 @@
-Métrica;Campo do ab;1 nó (só NO_A);2 nós;Diferença;Queda do NO_A sob carga
+﻿Métrica;Campo do ab;1 nó (só NO_A);2 nós;Diferença;Queda do NO_A sob carga
 Comando;;ab -n 1000 -c 50 -l;ab -n 1000 -c 50 -l;;ab -n 6000 -c 50 -l
 Requisições completas;Complete requests;1000;1000;;6000
 Requisições com erro;Failed requests + Non-2xx;0;0;;0

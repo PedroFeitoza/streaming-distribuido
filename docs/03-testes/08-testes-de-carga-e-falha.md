@@ -292,6 +292,17 @@ for i in 1 2 3 4; do curl -s -o /dev/null -D - http://localhost/videos/1 | grep 
 
 Resultado: `.12`, `.11`, `.12`, `.11`. O Nó A voltou ao revezamento sozinho, sem recarregar o Nginx: passado o `fail_timeout`, o Nginx tentou o `.11` de novo e, como respondeu, o recolocou na rotação.
 
+## Depois dos testes
+
+Os testes gravaram 8.009 linhas de teste em `reproducoes` (2.005 dos testes de carga, 6.000 da queda e 4 da conferência do religamento). Para zerar a tabela, na `db`:
+
+```bash
+sudo -u postgres psql -d streaming -c "TRUNCATE reproducoes RESTART IDENTITY;"
+sudo -u postgres psql -d streaming -c "SELECT COUNT(*) FROM reproducoes;"     # 0
+```
+
+`TRUNCATE` apaga todas as linhas de uma vez, e `RESTART IDENTITY` faz o `id` voltar a começar do 1. O `app_streaming` não tem permissão para isso, por isso o comando roda como `postgres`. Os números deste documento ficam registrados aqui.
+
 ## Limitações
 
 - O `ab` roda na própria `lb` (1 CPU), dividindo processador com o Nginx. O ideal seria uma máquina separada.
