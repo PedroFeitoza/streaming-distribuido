@@ -17,7 +17,7 @@ O script copia `server.js`, `package.json`, `package-lock.json`, `views` e o `im
 | app-a (NO_A) | `/opt/streaming.bak-20261026-234531` | `active`, `enabled` | `drwxr-xr-x` (sem escrita do grupo) | `No NO_A: o banco tem 3 videos` |
 | app-b (NO_B) | `/opt/streaming.bak-20261027-223926` | `active`, `enabled` | `drwxr-xr-x` (sem escrita do grupo) | `No NO_B: o banco tem 3 videos` |
 
-O `server.js` dos dois nós é idêntico ao do `main`. A cópia mais antiga (`/opt/streaming.bak-20261023`, da aplicação base) continua nos dois nós. Os nomes dos backups usam o relógio de cada VM: o da `app-a` aparece um dia antes do real, ver "Pendente".
+O `server.js` dos dois nós é idêntico ao do `main`. A cópia mais antiga (`/opt/streaming.bak-20261023`, da aplicação base) continua nos dois nós. Os nomes dos backups usam o relógio de cada VM. O da `app-a` foi criado na tarde de 27/10, mas ganhou a data 26/10 porque o relógio dela está atrasado (ver "Problema encontrado").
 
 ## Verificação pela lb
 
@@ -51,10 +51,16 @@ Ficaram 11 linhas: 6 de `NO_A` e 5 de `NO_B`. A primeira já existia antes deste
 
 Teste de queda de um nó, teste de reinício dos nós, e qualquer alteração na `lb` e na `db`. A pasta `~/streaming-novo` ficou nos dois nós e é só a cópia de entrega.
 
+## Problema encontrado: relógio da `app-a` e da `db` atrasado
+
+Comparando os relógios no fim da tarde de 27/10 (UTC): o Windows e a `app-b` estavam em 22:42, e a `app-a` e a `db` em 26/10 23:52, quase 23 horas atrasadas. O `timedatectl` das duas VMs diz que o NTP está ligado e sincronizado, o que não bate com o atraso. A causa mais provável é a VM ter sido pausada, ou ter salvo e restaurado o estado no VirtualBox, sem o relógio ser corrigido depois. Nada foi alterado.
+
+Consequência: o `now()` do banco preenche `reproducoes.data_hora` com a data errada, e os backups da `app-a` ganham o nome do dia errado. A contagem por nó não é afetada. Se o relógio da `db` for corrigido, as linhas já gravadas continuam com a data antiga, mais um motivo para apagar as linhas de teste antes da apresentação.
+
 ## Pendente
 
 - Acrescentar vídeos até chegar a 8 ou mais (guia 7.1.5), com IDs do YouTube conferidos.
 - Decidir se as linhas de teste de `reproducoes` são apagadas antes da apresentação (`TRUNCATE reproducoes RESTART IDENTITY`).
-- O relógio da `app-a` parece cerca de um dia atrasado em relação ao da `app-b` (os backups mostram 26/10 e 27/10 para a mesma tarde). Conferir com `date` e `timedatectl` nos dois nós.
+- Corrigir o relógio da `app-a` e da `db` (ver "Problema encontrado"); exige `sudo`.
 - Teste de queda real e teste de reinício dos nós com a aplicação completa.
 - Apagar `~/streaming-novo` e os backups antigos em `/opt/streaming.bak-*` quando o grupo não precisar mais.
