@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= titulo %> · Streaming Distribuído</title>
+  <%# Icone vazio e CSS dentro da pagina: cada arquivo a mais seria outra
+      requisicao passando pelo round-robin, e a barra deixaria de alternar
+      ao recarregar. %>
+  <link rel="icon" href="data:,">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; font-size: 18px;
+           color: #1f2937; background: #f3f4f6; }
+    a { color: #1d4ed8; }
+    .barra-do-no { position: sticky; top: 0; z-index: 1; padding: 14px 20px;
+                   color: #fff; font-size: 22px; text-align: center; }
+    .menu { display: flex; gap: 24px; padding: 12px 20px; background: #fff;
+            border-bottom: 1px solid #d1d5db; }
+    main { max-width: 960px; margin: 0 auto; padding: 20px; }
+    h1 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    th { background: #e5e7eb; }
+    .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .filtros a { padding: 6px 14px; border-radius: 999px; background: #fff;
+                 border: 1px solid #d1d5db; text-decoration: none; }
+    .filtros a.ativo { background: #1f2937; color: #fff; border-color: #1f2937; }
+    .player { width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
+    .aviso { padding: 12px 16px; background: #fff; border-left: 6px solid; }
+    .barra-pct { height: 26px; color: #fff; padding: 2px 8px; white-space: nowrap; }
+    .etiqueta { display: inline-block; padding: 2px 10px; border-radius: 4px; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="barra-do-no" style="background: <%= corDoNo(no.nome) %>">
+    Respondido pelo nó <strong><%= no.nome %></strong>
+    (máquina <%= no.maquina %>) às <%= no.hora %>
+  </div>
+  <nav class="menu">
+    <a href="/">Catálogo</a>
+    <a href="/distribuicao">Distribuição por nó</a>
+  </nav>
+  <main>

@@ -1,0 +1,13 @@
+{
+  "name": "streaming-local",
+  "private": true,
+  "description": "Ambiente de teste no PC: banco PostgreSQL temporario, os dois nos e um mini balanceador",
+  "type": "module",
+  "scripts": {
+    "start": "node iniciar.mjs"
+  },
+  "dependencies": {
+    "embedded-postgres": "16.14.0-beta.17",
+    "pg": "^8.23.1"
+  }
+}
